@@ -63,5 +63,49 @@ func main() {
 	// Implement the remaining endpoints similar to the above example, using the appropriate
 	// functions and data structures from the anime, lightnovels, and movies packages.
 
+	app.Post("/anime/get_episodes/", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Post("/anime/get_episode_url/", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/films", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/films/filmID", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/shows", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/shows/showID", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/shows/episodeID", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/lightnovel/search_novels", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/lightnovel/novel_info", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/lightnovel/chapters", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
+	app.Get("/lightnovel/chapter_content", func(c *fiber.Ctx) error {
+		// Implement the endpoint
+	})
+
 	app.Listen(":8000")
 }

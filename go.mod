@@ -1,3 +1,3 @@
-module github.com/ani-social/pipebomb
+module pipebomb
 
 go 1.20
