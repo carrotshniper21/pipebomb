@@ -3,7 +3,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 	"sync"
@@ -50,7 +49,7 @@ func setPosterCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-func processLink(elem *colly.HTMLElement, visitedLinks *sync.Map) {
+func processLink(elem *colly.HTMLElement, visitedLinks *sync.Map) string {
 	link := elem.Attr("href")
 	if strings.Contains(link, "/movie/watch") {
 		absLink := root + link
@@ -68,15 +67,17 @@ func processLink(elem *colly.HTMLElement, visitedLinks *sync.Map) {
 			response.Film = film
 		}
 
-		outputJSON(response)
+    output := outputJSON(response)
 		color.Cyan(random007Phrase())
 	}
+
+  return output
 }
 
-func outputJSON(response FilmResponse) {
+func outputJSON(response FilmResponse) string {
 	jsonBytes, err := json.Marshal(response)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(jsonBytes))
+	return string(jsonBytes)
 }
