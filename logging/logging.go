@@ -1,11 +1,12 @@
 // logging.go
-package logging 
+package logging
 
 import (
 	"math/rand"
 	"time"
 )
 
+// Random007Phrase returns a random 007 phrase
 func Random007Phrase() string {
 	phrases := []string{
 		"Shaken, not stirred.",

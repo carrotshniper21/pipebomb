@@ -1,18 +1,19 @@
-// scrape.go
+// film/scrape.go
 package film
 
 import (
 	"encoding/json"
-  "pipebomb/logging"
+	"log"
+	"pipebomb/logging"
+	"strconv"
 	"strings"
 	"sync"
-	"log"
-	"fmt"
 
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
 )
 
+// root is the root URL for the scraper to visit from (VIPStream)
 const root = "https://vipstream.tv"
 
 // setRequestCallback sets the film URL to the response struct
@@ -22,15 +23,14 @@ func setRequestCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-// FilmResponse is the response struct for the film scraper
+// filmScraper scrapes the film page
 func filmScraper(filmUrl string) (*FilmStruct, error) {
 	var film FilmStruct
-	var idpart IdSplit
 	c := colly.NewCollector()
 
 	setPosterCallback(c, &film)
 	setRequestCallback(c, &film)
-	setIdCallback(filmUrl, &film, &idpart)
+	setIdCallback(filmUrl, &film)
 
 	err := c.Visit(filmUrl)
 	if err != nil {
@@ -40,12 +40,25 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	return &film, nil
 }
 
-func setIdCallback(filmUrl string, film *FilmStruct, idpart *IdSplit) {
-	id := strings.SplitN(filmUrl, "/", 4)
-	film.Id = id[3]
-	mediaType := strings.SplitN(id[3], "/", 2)
-	fmt.Println(mediaType[0])
-	idpart.Type = mediaType[0]
+// setIdCallback sets the film ID to the response struct
+func setIdCallback(filmUrl string, film *FilmStruct) {
+	var idpart IdSplit
+	idParts := strings.Split(filmUrl, "/")
+	if len(idParts) >= 5 {
+		film.Id = idParts[4]
+		idpart.Type = idParts[3]
+		nameAndId := strings.Split(idParts[4], "-")
+		if len(nameAndId) > 1 {
+			idNum, err := strconv.Atoi(nameAndId[len(nameAndId)-1])
+			if err == nil {
+				idpart.IdNum = idNum
+				nameAndId = nameAndId[:len(nameAndId)-1]
+			}
+			idpart.Name = strings.Join(nameAndId, "-")
+			idpart.Name = strings.TrimPrefix(idpart.Name, "watch-")
+		}
+	}
+	film.IdParts = idpart
 }
 
 // setPosterCallback sets the film poster to the response struct or a default image
@@ -61,32 +74,34 @@ func setPosterCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
+// ProcessLink processes the link and returns a FilmStruct
 func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmStruct {
-    filmid := elem.Attr("href")
-    if strings.Contains(filmid, "/movie/watch") {
-        absLink := root + filmid 
-        if _, visited := visitedLinks.Load(absLink); visited {
-            return nil
-        }
-        visitedLinks.Store(absLink, struct{}{})
+	filmid := elem.Attr("href")
+	if strings.Contains(filmid, "/movie/watch") {
+		absLink := root + filmid
+		if _, visited := visitedLinks.Load(absLink); visited {
+			return nil
+		}
+		visitedLinks.Store(absLink, struct{}{})
 
-        film, err := filmScraper(absLink)
-        if err != nil {
-            return nil
-        }
+		film, err := filmScraper(absLink)
+		if err != nil {
+			return nil
+		}
 
-        color.Cyan(logging.Random007Phrase())
+		color.Cyan(logging.Random007Phrase())
 
-        return film
-    }
+		return film
+	}
 
-    return nil
+	return nil
 }
 
+// outputJSON returns a JSON string from a FilmResponse struct
 func outputJSON(response FilmResponse) string {
-    jsonBytes, err := json.Marshal(response)
-    if err != nil {
-        log.Fatal(err)
-    }
-    return string(jsonBytes)
+	jsonBytes, err := json.Marshal(response)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(jsonBytes)
 }
