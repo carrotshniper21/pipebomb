@@ -2,6 +2,7 @@ package cache
 
 import (
 	"encoding/json"
+	redis "github.com/go-redis/redis/v8"
 	"time"
 )
 
