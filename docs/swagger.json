@@ -34,10 +34,62 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/film.FilmResponse"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "film.FilmResponse": {
+            "description": "is the response struct",
+            "type": "object",
+            "properties": {
+                "film": {
+                    "$ref": "#/definitions/film.FilmStruct"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "film.FilmStruct": {
+            "description": "stores the film data",
+            "type": "object",
+            "properties": {
+                "href": {
+                    "type": "string",
+                    "example": "https://example.com/film/1"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "film-1"
+                },
+                "idParts": {
+                    "$ref": "#/definitions/film.IdSplit"
+                },
+                "poster": {
+                    "type": "string",
+                    "example": "https://example.com/poster/1.jpg"
+                }
+            }
+        },
+        "film.IdSplit": {
+            "description": "stores the film ID parts",
+            "type": "object",
+            "properties": {
+                "idNum": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Film 1"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "film"
                 }
             }
         }

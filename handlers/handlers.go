@@ -17,7 +17,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param   q query string true "Search Query"
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {object} film.FilmResponse
 // @Router /films/vip/search [get]
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")

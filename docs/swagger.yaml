@@ -1,4 +1,41 @@
 basePath: /api
+definitions:
+  film.FilmResponse:
+    description: is the response struct
+    properties:
+      film:
+        $ref: '#/definitions/film.FilmStruct'
+      status:
+        example: success
+        type: string
+    type: object
+  film.FilmStruct:
+    description: stores the film data
+    properties:
+      href:
+        example: https://example.com/film/1
+        type: string
+      id:
+        example: film-1
+        type: string
+      idParts:
+        $ref: '#/definitions/film.IdSplit'
+      poster:
+        example: https://example.com/poster/1.jpg
+        type: string
+    type: object
+  film.IdSplit:
+    description: stores the film ID parts
+    properties:
+      idNum:
+        type: integer
+      name:
+        example: Film 1
+        type: string
+      type:
+        example: film
+        type: string
+    type: object
 info:
   contact: {}
   description: Pipebomb API for searching and streaming movies
@@ -22,8 +59,7 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/film.FilmResponse'
       summary: Search for a film
       tags:
       - films
