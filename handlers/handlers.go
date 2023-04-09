@@ -41,7 +41,7 @@ func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	cacheKey := fmt.Sprintf("films_search_%s", query)
 
-	data, err := cache.cacheData(redisCache, cacheKey, fetchFilms, query)
+	data, err := cache.CacheData(redisCache, cacheKey, fetchFilms, query)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

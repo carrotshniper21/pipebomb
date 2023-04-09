@@ -12,6 +12,7 @@ type FilmResponse struct {
 type FilmStruct struct {
     Href    string  `json:"href" example:"https://example.com/film/1"`
     Poster  string  `json:"poster" example:"https://example.com/poster/1.jpg"`
+		Description string `json:"description" example:"https://example.com/description"`
     Id      string  `json:"id" example:"film-1"`
     IdParts IdSplit `json:"idParts"`
 }

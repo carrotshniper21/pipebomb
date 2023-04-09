@@ -63,7 +63,7 @@ func NewCache(addr string, password string, db int) *RedisCache {
 	return NewRedisCache(addr, password, db)
 }
 
-func cacheData(r *RedisCache, key string, fetchFunc func(string) (interface{}, error), query string) (interface{}, error) {
+func CacheData(r *RedisCache, key string, fetchFunc func(string) (interface{}, error), query string) (interface{}, error) {
 	data, err := r.Get(key)
 	if err == nil {
 		return data, nil

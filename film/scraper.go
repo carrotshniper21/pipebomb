@@ -3,11 +3,11 @@ package film
 
 import (
 	"encoding/json"
-	"log"
 	"pipebomb/logging"
 	"strconv"
 	"strings"
 	"sync"
+	"log"
 
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
@@ -31,6 +31,7 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	setPosterCallback(c, &film)
 	setRequestCallback(c, &film)
 	setIdCallback(filmUrl, &film)
+	setDescriptionCallback(c, &film)
 
 	err := c.Visit(filmUrl)
 	if err != nil {
@@ -38,6 +39,17 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	}
 
 	return &film, nil
+}
+
+func setDescriptionCallback(c *colly.Collector, film *FilmStruct) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.description", func(elem *colly.HTMLElement) {
+		description := elem.Text
+		if description != "" {
+			film.Description = description
+		} else {
+			film.Description = ""
+		}
+	})
 }
 
 // setIdCallback sets the film ID to the response struct
