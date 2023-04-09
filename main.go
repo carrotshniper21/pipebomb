@@ -2,10 +2,10 @@
 package main
 
 import (
-  "pipebomb/server"
+	"pipebomb/server"
 )
 
 func main() {
-  port := "8001"
-  server.StartServer(port)
+	port := "8001"
+	server.StartServer(port)
 }

@@ -12,6 +12,7 @@ func InitRouter() *mux.Router {
   r := mux.NewRouter()
   r.HandleFunc("/", handlers.Home)
   r.HandleFunc("/api/films/vip/search", handlers.FilmSearch)
+	// r.HandleFunc("/api/films/vip/source", handlers.FilmSource)
   return r
 }
 

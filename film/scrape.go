@@ -4,9 +4,10 @@ package film
 import (
 	"encoding/json"
   "pipebomb/logging"
-	"log"
 	"strings"
 	"sync"
+	"log"
+	"fmt"
 
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
@@ -24,10 +25,12 @@ func setRequestCallback(c *colly.Collector, film *FilmStruct) {
 // FilmResponse is the response struct for the film scraper
 func filmScraper(filmUrl string) (*FilmStruct, error) {
 	var film FilmStruct
+	var idpart IdSplit
 	c := colly.NewCollector()
 
 	setPosterCallback(c, &film)
 	setRequestCallback(c, &film)
+	setIdCallback(filmUrl, &film, &idpart)
 
 	err := c.Visit(filmUrl)
 	if err != nil {
@@ -35,6 +38,14 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	}
 
 	return &film, nil
+}
+
+func setIdCallback(filmUrl string, film *FilmStruct, idpart *IdSplit) {
+	id := strings.SplitN(filmUrl, "/", 4)
+	film.Id = id[3]
+	mediaType := strings.SplitN(id[3], "/", 2)
+	fmt.Println(mediaType[0])
+	idpart.Type = mediaType[0]
 }
 
 // setPosterCallback sets the film poster to the response struct or a default image
@@ -50,11 +61,10 @@ func setPosterCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-// scrape.go
 func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmStruct {
-    link := elem.Attr("href")
-    if strings.Contains(link, "/movie/watch") {
-        absLink := root + link
+    filmid := elem.Attr("href")
+    if strings.Contains(filmid, "/movie/watch") {
+        absLink := root + filmid 
         if _, visited := visitedLinks.Load(absLink); visited {
             return nil
         }
