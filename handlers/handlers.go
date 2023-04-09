@@ -11,6 +11,14 @@ import (
 	"github.com/gocolly/colly"
 )
 
+// @Summary Fetch film sources
+// @Description Fetch film sources by film ID
+// @Tags film
+// @Accept  json
+// @Produce  json
+// @Param   id query string true "Film ID"
+// @Success 200 {array} film.FilmSource
+// @Router /fetch-films [get]
 func FetchFilms(w http.ResponseWriter, r *http.Request) {
 	filmID := r.URL.Query().Get("id")
 
@@ -56,6 +64,14 @@ func searchFilms(query string) (interface{}, error) {
 	return results, nil
 }
 
+// @Summary Search for films
+// @Description Search for films by query
+// @Tags film
+// @Accept  json
+// @Produce  json
+// @Param   q query string true "Search Query"
+// @Success 200 {object} map[string]interface{}
+// @Router /search-films [get]
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 
