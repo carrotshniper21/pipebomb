@@ -1,0 +1,30 @@
+basePath: /api
+info:
+  contact: {}
+  description: Pipebomb API for searching and streaming movies
+  title: Pipebomb API
+  version: "1.0"
+paths:
+  /films/vip/search:
+    get:
+      consumes:
+      - application/json
+      description: Searches for a film and returns a JSON response
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Search for a film
+      tags:
+      - films
+swagger: "2.0"

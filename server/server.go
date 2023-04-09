@@ -4,6 +4,7 @@ import (
 	handies "github.com/gorilla/handlers"
 	"log"
 	"net/http"
+	_ "pipebomb/docs"
 	"pipebomb/handlers"
 
 	"github.com/gorilla/mux"
