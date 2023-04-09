@@ -2,19 +2,25 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/gocolly/colly"
 	"net/http"
 	"pipebomb/film"
 	"sync"
+	"fmt"
+
+	"github.com/gocolly/colly"
 )
 
 
-func fetchFilms(query string) (interface{}, error) {
+func FetchFilms(r *http.Request) {
+	query := r.URL.Query().Get("q")
+	film.FilmSource(query)
+}
+
+func searchFilms(query string) (interface{}, error) {
 	visitedLinks := sync.Map{}
 	c := colly.NewCollector()
 
-	var results []*film.FilmStruct
+	var results []*film.FilmSearch
 
 	c.OnHTML("a[href]", func(elem *colly.HTMLElement) {
 		film := film.ProcessLink(elem, &visitedLinks)
@@ -34,7 +40,7 @@ func fetchFilms(query string) (interface{}, error) {
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 
-	results, _ := fetchFilms(query)
+	results, _ := searchFilms(query)
 
 	jsonResponse := map[string]interface{}{
 		"results": results,

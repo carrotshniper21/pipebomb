@@ -17,15 +17,15 @@ import (
 const root = "https://vipstream.tv"
 
 // setRequestCallback sets the film URL to the response struct
-func setRequestCallback(c *colly.Collector, film *FilmStruct) {
+func setRequestCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnRequest(func(r *colly.Request) {
 		film.Href = r.URL.String()
 	})
 }
 
 // filmScraper scrapes the film page
-func filmScraper(filmUrl string) (*FilmStruct, error) {
-	var film FilmStruct
+func filmSearcher(filmUrl string) (*FilmSearch, error) {
+	var film FilmSearch
 	c := colly.NewCollector()
 
 	setPosterCallback(c, &film)
@@ -48,7 +48,7 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	return &film, nil
 }
 
-func setProductionCallback(c *colly.Collector, film *FilmStruct) {
+func setProductionCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
 		production := strings.Replace(elem.Text, "Production:", "", 1) 
 		if strings.Contains(production, ",") {
@@ -65,7 +65,7 @@ func setProductionCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-func setCountryCallback(c *colly.Collector, film *FilmStruct) {
+func setCountryCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(2)", func(elem *colly.HTMLElement) {
 		country := strings.Replace(elem.Text, "Country:", "", 1)
 		if strings.Contains(country, ",") {
@@ -81,7 +81,7 @@ func setCountryCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-func setDurationCallback(c *colly.Collector, film *FilmStruct) {
+func setDurationCallback(c *colly.Collector, film *FilmSearch) {
     c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(1)", func(elem *colly.HTMLElement) {
         duration := strings.TrimSpace(strings.Replace(elem.Text, "Duration:", "", 1))
 				duration = strings.Replace(duration, "min", "", 1)
@@ -95,7 +95,7 @@ func setDurationCallback(c *colly.Collector, film *FilmStruct) {
     })
 }
 
-func setGenreCallback(c *colly.Collector, film *FilmStruct) {
+func setGenreCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(2)", func(elem *colly.HTMLElement) {
 		genres := strings.Replace(elem.Text, "Genre:", "", 1)
 		genresParts := strings.Split(genres, ",")
@@ -106,7 +106,7 @@ func setGenreCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-func setCastCallback(c *colly.Collector, film *FilmStruct) {
+func setCastCallback(c *colly.Collector, film *FilmSearch) {
     c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
         casts := strings.Replace(elem.Text, "Casts:", "", 1)
         castsParts := strings.Split(casts, ",")
@@ -117,7 +117,7 @@ func setCastCallback(c *colly.Collector, film *FilmStruct) {
     })
 }
 
-func setReleasedCallback(c *colly.Collector, film *FilmStruct) {
+func setReleasedCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(1)" , func(elem *colly.HTMLElement) {
 		released := elem.Text
 		releasedParts := strings.Split(released, ":")
@@ -125,13 +125,13 @@ func setReleasedCallback(c *colly.Collector, film *FilmStruct) {
 	})
 }
 
-func setTitleCallback(c *colly.Collector, film *FilmStruct) {
+func setTitleCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > h2 > a", func(elem *colly.HTMLElement) {
 		film.Title = elem.Text
 	})
 }
 
-func setDescriptionCallback(c *colly.Collector, film *FilmStruct) {
+func setDescriptionCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.description", func(elem *colly.HTMLElement) {
 		description := elem.Text
 		if description != "" {
@@ -143,7 +143,7 @@ func setDescriptionCallback(c *colly.Collector, film *FilmStruct) {
 }
 
 // setIdCallback sets the film ID to the response struct
-func setIdCallback(filmUrl string, film *FilmStruct) {
+func setIdCallback(filmUrl string, film *FilmSearch) {
 	var idpart IdSplit
 	idParts := strings.Split(filmUrl, "/")
 	if len(idParts) >= 5 {
@@ -164,7 +164,7 @@ func setIdCallback(filmUrl string, film *FilmStruct) {
 }
 
 // setPosterCallback sets the film poster to the response struct or a default image
-func setPosterCallback(c *colly.Collector, film *FilmStruct) {
+func setPosterCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML(".dp-i-c-poster .film-poster-img", func(elem *colly.HTMLElement) {
 		poster := elem.Attr("src")
 
@@ -177,7 +177,7 @@ func setPosterCallback(c *colly.Collector, film *FilmStruct) {
 }
 
 // ProcessLink processes the link and returns a FilmStruct
-func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmStruct {
+func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmSearch {
 	filmid := elem.Attr("href")
 	if strings.Contains(filmid, "/movie/watch") {
 		absLink := root + filmid
@@ -186,7 +186,7 @@ func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmStruct {
 		}
 		visitedLinks.Store(absLink, struct{}{})
 
-		film, err := filmScraper(absLink)
+		film, err := filmSearcher(absLink)
 		if err != nil {
 			return nil
 		}
@@ -200,7 +200,7 @@ func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmStruct {
 }
 
 // outputJSON returns a JSON string from a FilmResponse struct
-func outputJSON(response FilmResponse) string {
+func outputJSON(response FilmSearchResponse) string {
 	jsonBytes, err := json.Marshal(response)
 	if err != nil {
 		log.Fatal(err)

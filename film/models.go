@@ -1,15 +1,19 @@
 package film
 
+type FilmSource struct {
+		Servers []string `json:"servers"`
+}
+
 // FilmResponse is the response struct
 // @Description is the response struct
-type FilmResponse struct {
+type FilmSearchResponse struct {
     Status string      `json:"status" example:"success"`
-    Film   *FilmStruct `json:"film"`
+    Film   *FilmSearch `json:"film"`
 }
 
 // FilmStruct stores the film data
 // @Description stores the film data
-type FilmStruct struct {
+type FilmSearch struct {
     Href    string  `json:"href" example:"https://example.com/film/1"`
     Poster  string  `json:"poster" example:"https://example.com/poster/1.jpg"`
 		Title string `json:"title" example:"https://example.com/2.jpg"`

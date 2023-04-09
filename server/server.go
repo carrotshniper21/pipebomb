@@ -16,7 +16,7 @@ func InitRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handlers.Home)
 	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch)
-	// r.HandleFunc("/api/films/vip/source", handlers.FilmSource)
+	r.HandleFunc("/api/films/vip/source", handlers.FetchFilms)
 
 	// Add the httpSwagger middleware to your router
 	r.PathPrefix("/docs").Handler(httpSwagger.WrapHandler)
