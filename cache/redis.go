@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
 	redis "github.com/go-redis/redis/v8"
 	"time"
@@ -13,6 +14,7 @@ var redisClient = redis.NewClient(&redis.Options{
 })
 
 func cacheData(key string, fetchFunc func(string) (interface{}, error), query string) (interface{}, error) {
+	ctx := context.Background()
 	cachedData, err := redisClient.Get(ctx, key).Result()
 	if err == nil {
 		var data interface{}
