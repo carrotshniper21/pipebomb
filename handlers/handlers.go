@@ -1,4 +1,3 @@
-// handlers/handlers.go
 package handlers
 
 import (
@@ -6,21 +5,18 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"net/http"
+	"pipebomb/cache"
 	"pipebomb/film"
 	"sync"
 )
 
-// FilmSearch searches for a film and returns a JSON response
-// @Summary Search for a film
-// @Description Searches for a film and returns a JSON response
-// @Tags films
-// @Accept  json
-// @Produce  json
-// @Param   q query string true "Search Query"
-// @Success 200 {object} film.FilmResponse
-// @Router /films/vip/search [get]
-func FilmSearch(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("q")
+var redisCache *cache.RedisCache
+
+func init() {
+	redisCache = cache.NewCache("localhost:6379", "", 0)
+}
+
+func fetchFilms(query string) (interface{}, error) {
 	visitedLinks := sync.Map{}
 	c := colly.NewCollector()
 
@@ -33,27 +29,50 @@ func FilmSearch(w http.ResponseWriter, r *http.Request) {
 		}
 	})
 
-	c.OnScraped(func(response *colly.Response) {
-		jsonResponse := map[string]interface{}{
-			"results": results,
-		}
+	err := c.Visit("https://flixhq.to/search/" + query)
+	if err != nil {
+		return nil, err
+	}
 
-		responseBytes, err := json.Marshal(jsonResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(responseBytes)
-	})
-
-	c.Visit("https://flixhq.to/search/" + query)
+	return results, nil
 }
 
-// Home is the home page
+func FilmSearch(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	cacheKey := fmt.Sprintf("films_search_%s", query)
+
+	data, err := cache.cacheData(redisCache, cacheKey, fetchFilms, query)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	results := data.([]*film.FilmStruct)
+
+	jsonResponse := map[string]interface{}{
+		"results": results,
+	}
+
+	responseBytes, err := json.Marshal(jsonResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("error writing response for film search: ", s)
+		return
+	}
+}
+
 func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "<html><body><h1>Welcome to the home page. Nyaa~~</h1></body></html>")
+	_, err := fmt.Fprintf(w, "<html><body><h1>Welcome to the home page. Nyaa~~</h1></body></html>")
+	if err != nil {
+		fmt.Println("error writing home page: ", err)
+		return
+	}
 }
