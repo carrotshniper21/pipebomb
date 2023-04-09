@@ -5,10 +5,18 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"net/http"
+	"pipebomb/cache"
 	"pipebomb/film"
 	"sync"
 )
 
+var redisCache *cache.RedisCache
+
+/*
+func init() {
+	redisCache = cache.NewCache("localhost:6379", "", 0)
+}
+*/
 
 func fetchFilms(query string) (interface{}, error) {
 	visitedLinks := sync.Map{}
@@ -33,8 +41,15 @@ func fetchFilms(query string) (interface{}, error) {
 
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
+	cacheKey := fmt.Sprintf("films_search_%s", query)
 
-	results, _ := fetchFilms(query)
+	data, err := cache.CacheData(redisCache, cacheKey, fetchFilms, query)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	results := data.([]*film.FilmStruct)
 
 	jsonResponse := map[string]interface{}{
 		"results": results,

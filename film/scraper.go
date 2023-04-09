@@ -2,8 +2,8 @@
 package film
 
 import (
-	"encoding/json"
 	"pipebomb/logging"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,9 +29,16 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	c := colly.NewCollector()
 
 	setPosterCallback(c, &film)
+	setTitleCallback(c, &film)
 	setRequestCallback(c, &film)
 	setIdCallback(filmUrl, &film)
 	setDescriptionCallback(c, &film)
+	setReleasedCallback(c, &film)
+	setCastCallback(c, &film)
+	setGenreCallback(c, &film)
+	setDurationCallback(c, &film)
+	setCountryCallback(c, &film)
+	setProductionCallback(c, &film)
 
 	err := c.Visit(filmUrl)
 	if err != nil {
@@ -39,6 +46,89 @@ func filmScraper(filmUrl string) (*FilmStruct, error) {
 	}
 
 	return &film, nil
+}
+
+func setProductionCallback(c *colly.Collector, film *FilmStruct) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
+		production := strings.Replace(elem.Text, "Production:", "", 1) 
+		if strings.Contains(production, ",") {
+		  productionParts := strings.Split(production, ",")
+			film.Production = make([]string, len(productionParts))
+			for i, production := range productionParts {
+				film.Production[i] = strings.TrimSpace(production)
+			}
+		} else {
+			production = strings.TrimSpace(production)
+			film.Production = []string{production}
+		}
+
+	})
+}
+
+func setCountryCallback(c *colly.Collector, film *FilmStruct) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(2)", func(elem *colly.HTMLElement) {
+		country := strings.Replace(elem.Text, "Country:", "", 1)
+		if strings.Contains(country, ",") {
+		  countryParts := strings.Split(country, ",")
+			film.Country = make([]string, len(countryParts))
+			for i, country := range countryParts {
+				film.Country[i] = strings.TrimSpace(country)
+			}
+		} else {
+			country = strings.TrimSpace(country)
+			film.Country = []string{country}
+		}
+	})
+}
+
+func setDurationCallback(c *colly.Collector, film *FilmStruct) {
+    c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(1)", func(elem *colly.HTMLElement) {
+        duration := strings.TrimSpace(strings.Replace(elem.Text, "Duration:", "", 1))
+				duration = strings.Replace(duration, "min", "", 1)
+        duration = strings.Replace(duration, "\n", "", 1)
+				duration = strings.ReplaceAll(duration, " ", "")
+				if strings.Contains(duration, "N/A") {
+					film.Duration = "N/A"
+				} else {
+					film.Duration = duration + " min"
+				}
+    })
+}
+
+func setGenreCallback(c *colly.Collector, film *FilmStruct) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(2)", func(elem *colly.HTMLElement) {
+		genres := strings.Replace(elem.Text, "Genre:", "", 1)
+		genresParts := strings.Split(genres, ",")
+		film.Genres = make([]string, len(genresParts))
+		for i, genre := range genresParts {
+			film.Genres[i] = strings.TrimSpace(genre)
+		}
+	})
+}
+
+func setCastCallback(c *colly.Collector, film *FilmStruct) {
+    c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
+        casts := strings.Replace(elem.Text, "Casts:", "", 1)
+        castsParts := strings.Split(casts, ",")
+        film.Cast = make([]string, len(castsParts))
+        for i, cast := range castsParts {
+            film.Cast[i] = strings.TrimSpace(cast)
+        }
+    })
+}
+
+func setReleasedCallback(c *colly.Collector, film *FilmStruct) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(1)" , func(elem *colly.HTMLElement) {
+		released := elem.Text
+		releasedParts := strings.Split(released, ":")
+		film.Released = strings.ReplaceAll(releasedParts[1], " ", "")
+	})
+}
+
+func setTitleCallback(c *colly.Collector, film *FilmStruct) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > h2 > a", func(elem *colly.HTMLElement) {
+		film.Title = elem.Text
+	})
 }
 
 func setDescriptionCallback(c *colly.Collector, film *FilmStruct) {
@@ -57,7 +147,7 @@ func setIdCallback(filmUrl string, film *FilmStruct) {
 	var idpart IdSplit
 	idParts := strings.Split(filmUrl, "/")
 	if len(idParts) >= 5 {
-		film.Id = idParts[4]
+		film.Id = idParts[3] + "/" + idParts[4]
 		idpart.Type = idParts[3]
 		nameAndId := strings.Split(idParts[4], "-")
 		if len(nameAndId) > 1 {
