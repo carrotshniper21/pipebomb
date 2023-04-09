@@ -2,6 +2,8 @@
 package film
 
 import (
+	"strings"
+
 	"github.com/gocolly/colly"
 )
 
@@ -15,7 +17,8 @@ func getFilmData(c *colly.Collector, filmid string) ([]FilmSource, error) {
 
 	c.OnHTML("a[data-linkid]", func(e *colly.HTMLElement) {
 		linkID := e.Attr("data-linkid")
-		serverName := e.Text
+		serverName := strings.TrimSpace(e.Text)
+		serverName = strings.ReplaceAll(serverName, "\n", "")
 		sources = append(sources, FilmSource{ServerName: serverName, LinkID: linkID})
 	})
 
