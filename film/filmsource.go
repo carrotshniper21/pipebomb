@@ -1,24 +1,28 @@
+// pipebomb/film/filmsource.go
 package film
 
 import (
 	"github.com/gocolly/colly"
 )
 
-func GetFilmSource(filmid string) {
+func GetFilmSource(filmid string) ([]FilmSource, error) {
 	c := colly.NewCollector()
 
-	getFilmData(c, filmid)
+	return getFilmData(c, filmid)
 }
+func getFilmData(c *colly.Collector, filmid string) ([]FilmSource, error) {
+	sources := []FilmSource{}
 
-func getFilmData(c *colly.Collector, filmid string) string {
 	c.OnHTML("a[data-linkid]", func(e *colly.HTMLElement) {
 		linkID := e.Attr("data-linkid")
+		serverName := e.Text
+		sources = append(sources, FilmSource{ServerName: serverName, LinkID: linkID})
 	})
 
-	// Visit the URL to be scraped
-	err = c.Visit("https://vipstream.tv/ajax/movie/episodes/" + filmid)
+	err := c.Visit("https://vipstream.tv/ajax/movie/episodes/" + filmid)
 	if err != nil {
 		return nil, err
 	}
-	return linkID
+
+	return sources, nil
 }

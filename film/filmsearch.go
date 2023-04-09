@@ -1,13 +1,14 @@
-// film/scrape.go
+// pipebomb/film/scrape.go
 package film
 
 import (
-	"pipebomb/logging"
 	"encoding/json"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
-	"log"
+
+	"pipebomb/logging"
 
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
@@ -50,9 +51,9 @@ func filmSearcher(filmUrl string) (*FilmSearch, error) {
 
 func setProductionCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
-		production := strings.Replace(elem.Text, "Production:", "", 1) 
+		production := strings.Replace(elem.Text, "Production:", "", 1)
 		if strings.Contains(production, ",") {
-		  productionParts := strings.Split(production, ",")
+			productionParts := strings.Split(production, ",")
 			film.Production = make([]string, len(productionParts))
 			for i, production := range productionParts {
 				film.Production[i] = strings.TrimSpace(production)
@@ -69,7 +70,7 @@ func setCountryCallback(c *colly.Collector, film *FilmSearch) {
 	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(2)", func(elem *colly.HTMLElement) {
 		country := strings.Replace(elem.Text, "Country:", "", 1)
 		if strings.Contains(country, ",") {
-		  countryParts := strings.Split(country, ",")
+			countryParts := strings.Split(country, ",")
 			film.Country = make([]string, len(countryParts))
 			for i, country := range countryParts {
 				film.Country[i] = strings.TrimSpace(country)
@@ -82,17 +83,17 @@ func setCountryCallback(c *colly.Collector, film *FilmSearch) {
 }
 
 func setDurationCallback(c *colly.Collector, film *FilmSearch) {
-    c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(1)", func(elem *colly.HTMLElement) {
-        duration := strings.TrimSpace(strings.Replace(elem.Text, "Duration:", "", 1))
-				duration = strings.Replace(duration, "min", "", 1)
-        duration = strings.Replace(duration, "\n", "", 1)
-				duration = strings.ReplaceAll(duration, " ", "")
-				if strings.Contains(duration, "N/A") {
-					film.Duration = "N/A"
-				} else {
-					film.Duration = duration + " min"
-				}
-    })
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-5.col-lg-5.col-md-4.col-sm-12 > div:nth-child(1)", func(elem *colly.HTMLElement) {
+		duration := strings.TrimSpace(strings.Replace(elem.Text, "Duration:", "", 1))
+		duration = strings.Replace(duration, "min", "", 1)
+		duration = strings.Replace(duration, "\n", "", 1)
+		duration = strings.ReplaceAll(duration, " ", "")
+		if strings.Contains(duration, "N/A") {
+			film.Duration = "N/A"
+		} else {
+			film.Duration = duration + " min"
+		}
+	})
 }
 
 func setGenreCallback(c *colly.Collector, film *FilmSearch) {
@@ -107,18 +108,18 @@ func setGenreCallback(c *colly.Collector, film *FilmSearch) {
 }
 
 func setCastCallback(c *colly.Collector, film *FilmSearch) {
-    c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
-        casts := strings.Replace(elem.Text, "Casts:", "", 1)
-        castsParts := strings.Split(casts, ",")
-        film.Cast = make([]string, len(castsParts))
-        for i, cast := range castsParts {
-            film.Cast[i] = strings.TrimSpace(cast)
-        }
-    })
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(3)", func(elem *colly.HTMLElement) {
+		casts := strings.Replace(elem.Text, "Casts:", "", 1)
+		castsParts := strings.Split(casts, ",")
+		film.Cast = make([]string, len(castsParts))
+		for i, cast := range castsParts {
+			film.Cast[i] = strings.TrimSpace(cast)
+		}
+	})
 }
 
 func setReleasedCallback(c *colly.Collector, film *FilmSearch) {
-	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(1)" , func(elem *colly.HTMLElement) {
+	c.OnHTML("#main-wrapper > div.detail_page.detail_page-style > div > div.detail_page-watch > div.detail_page-infor.border-bottom-block > div > div.dp-i-c-right > div.elements > div > div.col-xl-7.col-lg-7.col-md-8.col-sm-12 > div:nth-child(1)", func(elem *colly.HTMLElement) {
 		released := elem.Text
 		releasedParts := strings.Split(released, ":")
 		film.Released = strings.ReplaceAll(releasedParts[1], " ", "")

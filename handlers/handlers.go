@@ -2,18 +2,37 @@ package handlers
 
 import (
 	"encoding/json"
-	"net/http"
-	"pipebomb/film"
-	"sync"
 	"fmt"
+	"net/http"
+	"sync"
+
+	"pipebomb/film"
 
 	"github.com/gocolly/colly"
 )
 
+func FetchFilms(w http.ResponseWriter, r *http.Request) {
+	filmID := r.URL.Query().Get("id")
 
-func FetchFilms(r *http.Request) {
-	query := r.URL.Query().Get("q")
-	film.FilmSource(query)
+	sources, err := film.GetFilmSource(filmID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	responseBytes, err := json.Marshal(sources)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("error writing response for film sources: ", s)
+		return
+	}
 }
 
 func searchFilms(query string) (interface{}, error) {
