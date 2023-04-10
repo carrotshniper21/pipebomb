@@ -10,9 +10,9 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetFilmSources(serverID string) string {
+func GetFilmSources(serverID string) *FilmSources {
 	c := colly.NewCollector()
-	var jsonData string
+	var filmSources *FilmSources
 
 	c.OnResponse(func(r *colly.Response) {
 		var source FilmSource
@@ -22,11 +22,7 @@ func GetFilmSources(serverID string) string {
 		}
 		response, _ := getStream(source.Link)
 
-		jsonDataBytes, err := json.MarshalIndent(response, "", "  ")
-		if err != nil {
-			return
-		}
-		jsonData = string(jsonDataBytes)
+		filmSources = response
 	})
 
 	err := c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
@@ -34,7 +30,7 @@ func GetFilmSources(serverID string) string {
 		fmt.Println("error visiting url: ", err)
 	}
 
-	return jsonData
+	return filmSources
 }
 
 func getStream(url string) (*FilmSources, error) {

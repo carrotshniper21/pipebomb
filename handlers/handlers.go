@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"sync"
 
-	"pipebomb/film"
 	"github.com/gocolly/colly"
+	"pipebomb/film"
 )
 
 // @Summary Fetch film sources
@@ -21,16 +21,15 @@ import (
 func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	serverID := r.URL.Query().Get("id")
 	sources := film.GetFilmSources(serverID)
-	responseBytes, err := json.Marshal(sources)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if sources == nil {
+		http.Error(w, "Error fetching film sources", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, s := w.Write(responseBytes)
-	if s != nil {
-		fmt.Println("error writing response for film sources: ", s)
+	err := json.NewEncoder(w).Encode(sources)
+	if err != nil {
+		fmt.Println("error writing response for film sources: ", err)
 	}
 }
 
