@@ -29,7 +29,10 @@ func GetFilmSources(serverID string) string {
 		jsonData = string(jsonDataBytes)
 	})
 
-	c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
+	err := c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
+	if err != nil {
+		fmt.Println("error visiting url: ", err)
+	}
 
 	return jsonData
 }
