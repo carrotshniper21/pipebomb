@@ -1,3 +1,4 @@
+// film/filmsources.go
 package film
 
 import (
@@ -67,6 +68,12 @@ func getStream(url string) (*FilmSources, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	//decryptedSources, err := util.Boobies(response.Sources)
+	//if err != nil {
+	//	fmt.Println("bruh sources error", err)
+	//}
+	//fmt.Println("decrypted?", decryptedSources)
 
 	return &response, nil
 }
