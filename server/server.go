@@ -17,7 +17,8 @@ func InitRouter() *mux.Router {
 	r.HandleFunc("/", handlers.Home)
 	r.PathPrefix("/docs").Handler(httpSwagger.WrapHandler)
 	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch)
-	r.HandleFunc("/api/films/vip/source", handlers.FetchFilms)
+	r.HandleFunc("/api/films/vip/servers", handlers.FetchFilms)
+	r.HandleFunc("/api/films/vip/sources", handlers.FetchFilmSources)
 
 	return r
 }

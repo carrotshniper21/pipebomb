@@ -15,7 +15,244 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/films/vip/search": {
+            "get": {
+                "description": "Search for films by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "film"
+                ],
+                "summary": "Search for films",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/film.FilmSearch"
+                        }
+                    }
+                }
+            }
+        },
+        "/films/vip/servers": {
+            "get": {
+                "description": "Fetch film servers by film ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "film"
+                ],
+                "summary": "Fetch film servers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Film ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/film.FilmServer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/films/vip/sources": {
+            "get": {
+                "description": "Fetch film servers by server ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "film"
+                ],
+                "summary": "Fetch film sources",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/film.FilmSources"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "film.FilmSearch": {
+            "description": "stores the film data",
+            "type": "object",
+            "properties": {
+                "casts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "cast"
+                    ]
+                },
+                "country": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "country"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Description"
+                },
+                "duration": {
+                    "type": "string",
+                    "example": "0 min"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "genre"
+                    ]
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://example.com/film/1"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "movie/film-1"
+                },
+                "idParts": {
+                    "$ref": "#/definitions/film.IdSplit"
+                },
+                "poster": {
+                    "type": "string",
+                    "example": "https://example.com/poster/1.jpg"
+                },
+                "production": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "production"
+                    ]
+                },
+                "released": {
+                    "type": "string",
+                    "example": "2000"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Film"
+                }
+            }
+        },
+        "film.FilmServer": {
+            "type": "object",
+            "properties": {
+                "linkID": {
+                    "type": "string"
+                },
+                "serverName": {
+                    "type": "string"
+                }
+            }
+        },
+        "film.FilmSources": {
+            "type": "object",
+            "properties": {
+                "server": {
+                    "type": "integer"
+                },
+                "sources": {
+                    "type": "string"
+                },
+                "tracks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "default": {
+                                "type": "boolean"
+                            },
+                            "file": {
+                                "type": "string"
+                            },
+                            "kind": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "film.IdSplit": {
+            "description": "stores the film ID parts",
+            "type": "object",
+            "properties": {
+                "idNum": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "film"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "movie"
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

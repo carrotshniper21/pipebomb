@@ -7,28 +7,51 @@ import (
 	"sync"
 
 	"pipebomb/film"
-
 	"github.com/gocolly/colly"
 )
 
 // @Summary Fetch film sources
-// @Description Fetch film sources by film ID
+// @Description Fetch film servers by server ID
+// @Tags film
+// @Accept json
+// @Produce json
+// @Param id query string true "Server ID"
+// @Success 200 {array} film.FilmSources
+// @Router /films/vip/sources [get]
+func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
+	serverID := r.URL.Query().Get("id")
+	sources := film.GetFilmSources(serverID)
+	responseBytes, err := json.Marshal(sources)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("error writing response for film sources: ", s)
+	}
+}
+
+// @Summary Fetch film servers
+// @Description Fetch film servers by film ID
 // @Tags film
 // @Accept  json
 // @Produce  json
 // @Param   id query string true "Film ID"
-// @Success 200 {array} film.FilmSource
-// @Router /fetch-films [get]
+// @Success 200 {array} film.FilmServer
+// @Router /films/vip/servers [get]
 func FetchFilms(w http.ResponseWriter, r *http.Request) {
 	filmID := r.URL.Query().Get("id")
 
-	sources, err := film.GetFilmSource(filmID)
+	servers, err := film.GetFilmServer(filmID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	responseBytes, err := json.Marshal(sources)
+	responseBytes, err := json.Marshal(servers)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,7 +61,7 @@ func FetchFilms(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("error writing response for film sources: ", s)
+		fmt.Println("error writing response for film servers: ", s)
 		return
 	}
 }
@@ -70,8 +93,8 @@ func searchFilms(query string) (interface{}, error) {
 // @Accept  json
 // @Produce  json
 // @Param   q query string true "Search Query"
-// @Success 200 {object} map[string]interface{}
-// @Router /search-films [get]
+// @Success 200 {object} film.FilmSearch
+// @Router /films/vip/search [get]
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 

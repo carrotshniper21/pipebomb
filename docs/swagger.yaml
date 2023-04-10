@@ -1,8 +1,166 @@
 basePath: /api
+definitions:
+  film.FilmSearch:
+    description: stores the film data
+    properties:
+      casts:
+        example:
+        - cast
+        items:
+          type: string
+        type: array
+      country:
+        example:
+        - country
+        items:
+          type: string
+        type: array
+      description:
+        example: Description
+        type: string
+      duration:
+        example: 0 min
+        type: string
+      genres:
+        example:
+        - genre
+        items:
+          type: string
+        type: array
+      href:
+        example: https://example.com/film/1
+        type: string
+      id:
+        example: movie/film-1
+        type: string
+      idParts:
+        $ref: '#/definitions/film.IdSplit'
+      poster:
+        example: https://example.com/poster/1.jpg
+        type: string
+      production:
+        example:
+        - production
+        items:
+          type: string
+        type: array
+      released:
+        example: "2000"
+        type: string
+      title:
+        example: Film
+        type: string
+    type: object
+  film.FilmServer:
+    properties:
+      linkID:
+        type: string
+      serverName:
+        type: string
+    type: object
+  film.FilmSources:
+    properties:
+      server:
+        type: integer
+      sources:
+        type: string
+      tracks:
+        items:
+          properties:
+            default:
+              type: boolean
+            file:
+              type: string
+            kind:
+              type: string
+            label:
+              type: string
+          type: object
+        type: array
+    type: object
+  film.IdSplit:
+    description: stores the film ID parts
+    properties:
+      idNum:
+        type: integer
+      name:
+        example: film
+        type: string
+      type:
+        example: movie
+        type: string
+    type: object
 info:
   contact: {}
   description: Pipebomb API for searching and streaming movies
   title: Pipebomb API
   version: "1.0"
-paths: {}
+paths:
+  /films/vip/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for films by query
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/film.FilmSearch'
+      summary: Search for films
+      tags:
+      - film
+  /films/vip/servers:
+    get:
+      consumes:
+      - application/json
+      description: Fetch film servers by film ID
+      parameters:
+      - description: Film ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/film.FilmServer'
+            type: array
+      summary: Fetch film servers
+      tags:
+      - film
+  /films/vip/sources:
+    get:
+      consumes:
+      - application/json
+      description: Fetch film servers by server ID
+      parameters:
+      - description: Server ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/film.FilmSources'
+            type: array
+      summary: Fetch film sources
+      tags:
+      - film
 swagger: "2.0"

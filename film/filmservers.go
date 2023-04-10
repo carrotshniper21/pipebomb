@@ -7,19 +7,19 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetFilmSource(filmid string) ([]FilmSource, error) {
+func GetFilmServer(filmid string) ([]FilmServer, error) {
 	c := colly.NewCollector()
 
-	return getFilmData(c, filmid)
+	return getServerDataid(c, filmid)
 }
-func getFilmData(c *colly.Collector, filmid string) ([]FilmSource, error) {
-	sources := []FilmSource{}
+func getServerDataid(c *colly.Collector, filmid string) ([]FilmServer, error) {
+	servers := []FilmServer{}
 
 	c.OnHTML("a[data-linkid]", func(e *colly.HTMLElement) {
 		linkID := e.Attr("data-linkid")
 		serverName := strings.TrimSpace(e.Text)
 		serverName = strings.ReplaceAll(serverName, "\n", "")
-		sources = append(sources, FilmSource{ServerName: serverName, LinkID: linkID})
+		servers = append(servers, FilmServer{ServerName: serverName, LinkID: linkID})
 	})
 
 	err := c.Visit("https://vipstream.tv/ajax/movie/episodes/" + filmid)
@@ -27,5 +27,5 @@ func getFilmData(c *colly.Collector, filmid string) ([]FilmSource, error) {
 		return nil, err
 	}
 
-	return sources, nil
+	return servers, nil
 }
