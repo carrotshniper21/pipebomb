@@ -19,6 +19,7 @@ func InitRouter() *mux.Router {
 	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch)
 	r.HandleFunc("/api/films/vip/servers", handlers.FetchFilms)
 	r.HandleFunc("/api/films/vip/sources", handlers.FetchFilmSources)
+	r.HandleFunc("/api/shows/vip/search", handlers.ShowSearch)
 
 	return r
 }

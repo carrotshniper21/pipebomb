@@ -117,6 +117,38 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/shows/vip/search": {
+            "get": {
+                "description": "Search for shows by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "show"
+                ],
+                "summary": "Search for shows",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/show.ShowSearch"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -249,6 +281,96 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "example": "movie"
+                }
+            }
+        },
+        "show.IdSplit": {
+            "description": "stores the show ID parts",
+            "type": "object",
+            "properties": {
+                "idNum": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "show"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "show"
+                }
+            }
+        },
+        "show.ShowSearch": {
+            "description": "stores the show data",
+            "type": "object",
+            "properties": {
+                "casts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "cast"
+                    ]
+                },
+                "country": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "country"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Description"
+                },
+                "duration": {
+                    "type": "string",
+                    "example": "0 min"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "genre"
+                    ]
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://example.com/show/1"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "show/episode-1"
+                },
+                "idParts": {
+                    "$ref": "#/definitions/show.IdSplit"
+                },
+                "poster": {
+                    "type": "string",
+                    "example": "https://example.com/poster/1.jpg"
+                },
+                "production": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "production"
+                    ]
+                },
+                "released": {
+                    "type": "string",
+                    "example": "2000"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Show"
                 }
             }
         }

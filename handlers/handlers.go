@@ -8,6 +8,7 @@ import (
 
 	"github.com/gocolly/colly"
 	"pipebomb/film"
+	"pipebomb/show"
 )
 
 // @Summary Fetch film sources
@@ -98,6 +99,59 @@ func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 
 	results, _ := searchFilms(query)
+
+	jsonResponse := map[string]interface{}{
+		"results": results,
+	}
+
+	responseBytes, err := json.Marshal(jsonResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("error writing response for film search: ", s)
+		return
+	}
+}
+
+func searchShows(query string) (interface{}, error) {
+	visitedLinks := sync.Map{}
+	c := colly.NewCollector()
+
+	var results []*show.ShowSearch
+
+	c.OnHTML("a[href]", func(elem *colly.HTMLElement) {
+		show := show.ProcessLink(elem, &visitedLinks)
+		if show != nil {
+			results = append(results, show)
+		}
+	})
+
+	err := c.Visit("https://flixhq.to/search/" + query)
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+// @Summary Search for shows
+// @Description Search for shows by query
+// @Tags show
+// @Accept  json
+// @Produce  json
+// @Param   q query string true "Search Query"
+// @Success 200 {object} show.ShowSearch
+// @Router /shows/vip/search [get]
+func ShowSearch(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+
+	results, _ := searchShows(query)
 
 	jsonResponse := map[string]interface{}{
 		"results": results,

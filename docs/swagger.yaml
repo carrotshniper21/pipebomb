@@ -90,6 +90,69 @@ definitions:
         example: movie
         type: string
     type: object
+  show.IdSplit:
+    description: stores the show ID parts
+    properties:
+      idNum:
+        type: integer
+      name:
+        example: show
+        type: string
+      type:
+        example: show
+        type: string
+    type: object
+  show.ShowSearch:
+    description: stores the show data
+    properties:
+      casts:
+        example:
+        - cast
+        items:
+          type: string
+        type: array
+      country:
+        example:
+        - country
+        items:
+          type: string
+        type: array
+      description:
+        example: Description
+        type: string
+      duration:
+        example: 0 min
+        type: string
+      genres:
+        example:
+        - genre
+        items:
+          type: string
+        type: array
+      href:
+        example: https://example.com/show/1
+        type: string
+      id:
+        example: show/episode-1
+        type: string
+      idParts:
+        $ref: '#/definitions/show.IdSplit'
+      poster:
+        example: https://example.com/poster/1.jpg
+        type: string
+      production:
+        example:
+        - production
+        items:
+          type: string
+        type: array
+      released:
+        example: "2000"
+        type: string
+      title:
+        example: Show
+        type: string
+    type: object
 info:
   contact: {}
   description: Pipebomb API for searching and streaming movies
@@ -163,4 +226,25 @@ paths:
       summary: Fetch film sources
       tags:
       - film
+  /shows/vip/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for shows by query
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/show.ShowSearch'
+      summary: Search for shows
+      tags:
+      - show
 swagger: "2.0"
