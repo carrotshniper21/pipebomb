@@ -13,7 +13,7 @@ import (
 
 // @Summary Fetch film sources
 // @Description Fetch film servers by server ID
-// @Tags film
+// @Tags films
 // @Accept json
 // @Produce json
 // @Param id query string true "Server ID"

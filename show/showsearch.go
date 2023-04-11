@@ -183,22 +183,22 @@ func setProductionCallback(c *colly.Collector, show *ShowSearch) {
 
 // ProcessLink processes the link and returns a ShowStruct
 func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *ShowSearch {
-    filmid := elem.Attr("href")
-    if strings.Contains(filmid, "/movie/watch") {
-        absLink := root + filmid
+    showid := elem.Attr("href")
+    if strings.Contains(showid, "/tv/watch") {
+        absLink := root + showid
         if _, visited := visitedLinks.Load(absLink); visited {
             return nil
         }
         visitedLinks.Store(absLink, struct{}{})
 
-        film, err := showSearcher(absLink)
+        show, err := showSearcher(absLink)
         if err != nil {
             return nil
         }
 
         color.Cyan(logging.Random007Phrase())
 
-        return film
+        return show
     }
 
     return nil
