@@ -26,7 +26,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "film"
+                    "films"
                 ],
                 "summary": "Search for films",
                 "parameters": [
@@ -58,7 +58,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "film"
+                    "films"
                 ],
                 "summary": "Fetch film servers",
                 "parameters": [
@@ -93,7 +93,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "film"
+                    "films"
                 ],
                 "summary": "Fetch film sources",
                 "parameters": [
@@ -128,7 +128,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "show"
+                    "shows"
                 ],
                 "summary": "Search for shows",
                 "parameters": [

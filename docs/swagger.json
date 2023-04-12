@@ -18,7 +18,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "film"
+                    "films"
                 ],
                 "summary": "Search for films",
                 "parameters": [
@@ -50,7 +50,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "film"
+                    "films"
                 ],
                 "summary": "Fetch film servers",
                 "parameters": [
@@ -85,7 +85,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "film"
+                    "films"
                 ],
                 "summary": "Fetch film sources",
                 "parameters": [
@@ -120,7 +120,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "show"
+                    "shows"
                 ],
                 "summary": "Search for shows",
                 "parameters": [

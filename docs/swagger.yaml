@@ -179,7 +179,7 @@ paths:
             $ref: '#/definitions/film.FilmSearch'
       summary: Search for films
       tags:
-      - film
+      - films
   /films/vip/servers:
     get:
       consumes:
@@ -202,7 +202,7 @@ paths:
             type: array
       summary: Fetch film servers
       tags:
-      - film
+      - films
   /films/vip/sources:
     get:
       consumes:
@@ -225,7 +225,7 @@ paths:
             type: array
       summary: Fetch film sources
       tags:
-      - film
+      - films
   /shows/vip/search:
     get:
       consumes:
@@ -246,5 +246,5 @@ paths:
             $ref: '#/definitions/show.ShowSearch'
       summary: Search for shows
       tags:
-      - show
+      - shows
 swagger: "2.0"

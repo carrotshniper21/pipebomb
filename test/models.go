@@ -1,4 +1,4 @@
-package show
+package main
 
 type ShowSource struct {
 	Link string `json:"link"`
@@ -11,8 +11,14 @@ type ShowServer struct {
 }
 
 type ShowSeason struct {
-	SeasonName string `json:"serverName"`
-	SeasonID   string `json:"serverID"`
+	SeasonName string `json:"seasonName"`
+	SeasonID   string `json:"seasonID"`
+	Episodes []Episode `json:"episodes"`
+}
+
+type Episode struct {
+	Title string `json:"title"`
+	EpisodeID string `json:"episodeID"`
 }
 
 type ShowSources struct {
@@ -55,5 +61,5 @@ type ShowSearch struct {
 type IdSplit struct {
 	Type  string `json:"type" example:"show"`
 	Name  string `json:"name" example:"show"`
-	IdNum int    `json:"idNum" example:1`
+	IdNum int    `json:"idNum" example:"1"`
 }

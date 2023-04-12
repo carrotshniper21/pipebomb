@@ -36,7 +36,7 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Fetch film servers
 // @Description Fetch film servers by film ID
-// @Tags film
+// @Tags films
 // @Accept  json
 // @Produce  json
 // @Param   id query string true "Film ID"
@@ -89,7 +89,7 @@ func searchFilms(query string) (interface{}, error) {
 
 // @Summary Search for films
 // @Description Search for films by query
-// @Tags film
+// @Tags films
 // @Accept  json
 // @Produce  json
 // @Param   q query string true "Search Query"
@@ -142,7 +142,7 @@ func searchShows(query string) (interface{}, error) {
 
 // @Summary Search for shows
 // @Description Search for shows by query
-// @Tags show
+// @Tags shows
 // @Accept  json
 // @Produce  json
 // @Param   q query string true "Search Query"
