@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/fatih/color"
 	"github.com/gocolly/colly"
+	"pipebomb/logging"
 	"pipebomb/film"
 	"pipebomb/show"
 )
@@ -21,7 +23,11 @@ import (
 // @Router /films/vip/sources [get]
 func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	serverID := r.URL.Query().Get("id")
-	sources := film.GetFilmSources(serverID)
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
+
+	sources := film.GetFilmSources(serverID, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
 	if sources == nil {
 		http.Error(w, "Error fetching film sources", http.StatusInternalServerError)
 		return
@@ -44,8 +50,12 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 // @Router /films/vip/servers [get]
 func FetchFilms(w http.ResponseWriter, r *http.Request) {
 	filmID := r.URL.Query().Get("id")
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
 
-	servers, err := film.GetFilmServer(filmID)
+	servers, err := film.GetFilmServer(filmID, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -66,7 +76,7 @@ func FetchFilms(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func searchFilms(query string) (interface{}, error) {
+func searchFilms(query, reqType, remoteAddress, reqPath, reqQueryParams string) (interface{}, error) {
 	visitedLinks := sync.Map{}
 	c := colly.NewCollector()
 
@@ -79,6 +89,7 @@ func searchFilms(query string) (interface{}, error) {
 		}
 	})
 
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://flixhq.to/search/" + query)
 	if err != nil {
 		return nil, err
@@ -86,6 +97,7 @@ func searchFilms(query string) (interface{}, error) {
 
 	return results, nil
 }
+
 
 // @Summary Search for films
 // @Description Search for films by query
@@ -97,8 +109,11 @@ func searchFilms(query string) (interface{}, error) {
 // @Router /films/vip/search [get]
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
 
-	results, _ := searchFilms(query)
+	results, _ := searchFilms(query, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
 
 	jsonResponse := map[string]interface{}{
 		"results": results,
@@ -119,7 +134,8 @@ func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func searchShows(query string) (interface{}, error) {
+
+func searchShows(query, reqType, remoteAddress, reqPath, reqQueryParams string) (interface{}, error) {
 	visitedLinks := sync.Map{}
 	c := colly.NewCollector()
 
@@ -132,6 +148,7 @@ func searchShows(query string) (interface{}, error) {
 		}
 	})
 
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://flixhq.to/search/" + query)
 	if err != nil {
 		return nil, err
@@ -150,8 +167,11 @@ func searchShows(query string) (interface{}, error) {
 // @Router /shows/vip/search [get]
 func ShowSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
 
-	results, _ := searchShows(query)
+	results, _ := searchShows(query, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
 
 	jsonResponse := map[string]interface{}{
 		"results": results,

@@ -3,15 +3,17 @@ package film
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"regexp"
+	"fmt"
+	"io"
 
 	"github.com/gocolly/colly"
+	"github.com/fatih/color"
+	"pipebomb/logging"
 )
 
-func GetFilmSources(serverID string) *FilmSources {
+func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams string) *FilmSources {
 	c := colly.NewCollector()
 	var filmSources *FilmSources
 
@@ -26,6 +28,7 @@ func GetFilmSources(serverID string) *FilmSources {
 		filmSources = response
 	})
 
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
 	if err != nil {
 		fmt.Println("error visiting url: ", err)

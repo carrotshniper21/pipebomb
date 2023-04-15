@@ -6,6 +6,16 @@ import (
 	"time"
 )
 
+// Http logging for important messages BITCH!!!
+func HttpLogger() []string {
+	logTypes := []string{
+		"INFO",
+		"WARNING",
+		"ERROR",
+	}
+	return logTypes
+}
+
 // Random007Phrase returns a random 007 phrase
 func Random007Phrase() string {
 	phrases := []string{

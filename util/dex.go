@@ -26,7 +26,7 @@ func generateKey(salt []byte, output int) ([]byte, error) {
 		}
 	}(resp.Body)
 
-	secret, err := io.ReadAll(resp.Body)
+	secret, err := io.ReadAll(resp.Body) 
 	if err != nil {
 		return nil, err
 	}
@@ -74,25 +74,13 @@ func decipher(encodedURL string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-func titties(url string) (map[string]interface{}, error) {
+func main(url string) (map[string]interface{}, error) {
+	url = "U2FsdGVkX1/bv0J3BD6JIOW7s2Me7qYvfGF7uD5yJSHTLIdj3cvnRpzsxMibTgCwGcNhi3YonZGTcObeSm3A7L3PR1I/WyG0MM6/qVoW1l+EW1v9VmyrETY6IRcDcQ9FnRTtfUVAIogkkmnKc5s0ABtQCGl6ZwC1H5hXJaWru19VIMxAKc/vU8tS4HA8eCmKr4vI5H+sL5cjb3RBu2Abv3WX/PgxlYgsq77xBSWS8PvnI9QHNK3weTuPekTubR9c2qoftbDZXytP2QSRAFksZaRRM2PXUof+GjHgPOUW6JpdZRK/Uc8UOI1xRWxjGcr2kMrvG8nlaB02aa+hJwUCh4/O2LaodllSUYsz1zrwrrEzIKNUOHbroOM0czUxNnPMmL+PWffbJbAKJcPV8wE4/E1h5i7k/HWR3guOKUPwxZe7tvyLPcRYZOI8hWvxCZGCPqTDHL4DiZkTGdNEjk9YjglLKzdnHvRuPcP9jezGhOQ="
 	decryptedURLs, err := decipher(url)
+	fmt.Println(decryptedURLs)
 	if err != nil {
 		return nil, err
 	}
 	return decryptedURLs, nil
 }
 
-func Boobies(encoded string) (string, error) {
-	cum, err := titties(encoded)
-	if err != nil {
-		fmt.Println("error:", err)
-		return "", err
-	}
-	fmt.Println("decrypted URLs:", cum)
-
-	decryptedSources, err := json.Marshal(cum)
-	if err != nil {
-		return "", err
-	}
-	return string(decryptedSources), nil
-}

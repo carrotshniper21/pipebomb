@@ -8,9 +8,6 @@ import (
     "strings"
     "sync"
 
-    "pipebomb/logging"
-
-    "github.com/fatih/color"
     "github.com/gocolly/colly"
 )
 
@@ -195,8 +192,6 @@ func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *ShowSearch {
         if err != nil {
             return nil
         }
-
-        color.Cyan(logging.Random007Phrase())
 
         return show
     }
