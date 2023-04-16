@@ -10,14 +10,27 @@ type FilmServer struct {
 	LinkID     string `json:"linkID"`
 }
 
-type FilmSources struct {
+type Source struct {
+	File    string `json:"file"`
+	Type    string `json:"type"`
+}
+
+type Track struct {
+    File    string `json:"file"`
+    Label   string `json:"label,omitempty"`
+    Kind    string `json:"kind"`
+    Default bool   `json:"default,omitempty"`
+}
+
+type FilmSourcesDecrypted struct {
+	  Sources []Source `json:"sources"`
+    Tracks  []Track `json:"tracks"`
+    Server int `json:"server"`
+}
+
+type FilmSourcesEncrypted struct {
     Sources string `json:"sources"`
-    Tracks  []struct {
-        File    string `json:"file"`
-        Label   string `json:"label,omitempty"`
-        Kind    string `json:"kind"`
-        Default bool   `json:"default,omitempty"`
-    } `json:"tracks"`
+    Tracks  []Track `json:"tracks"`
     Server int `json:"server"`
 }
 
@@ -50,5 +63,5 @@ type FilmSearch struct {
 type IdSplit struct {
 	Type  string `json:"type" example:"movie"`
 	Name  string `json:"name" example:"film"`
-	IdNum int    `json:"idNum" example:1`
+	IdNum int    `json:"idNum" example:"1"`
 }

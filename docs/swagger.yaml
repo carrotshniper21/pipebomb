@@ -58,7 +58,7 @@ definitions:
       serverName:
         type: string
     type: object
-  film.FilmSources:
+  film.FilmSourcesEncrypted:
     properties:
       server:
         type: integer
@@ -66,22 +66,14 @@ definitions:
         type: string
       tracks:
         items:
-          properties:
-            default:
-              type: boolean
-            file:
-              type: string
-            kind:
-              type: string
-            label:
-              type: string
-          type: object
+          $ref: '#/definitions/film.Track'
         type: array
     type: object
   film.IdSplit:
     description: stores the film ID parts
     properties:
       idNum:
+        example: 1
         type: integer
       name:
         example: film
@@ -90,10 +82,29 @@ definitions:
         example: movie
         type: string
     type: object
+  film.Track:
+    properties:
+      default:
+        type: boolean
+      file:
+        type: string
+      kind:
+        type: string
+      label:
+        type: string
+    type: object
+  show.Episode:
+    properties:
+      episodeID:
+        type: string
+      title:
+        type: string
+    type: object
   show.IdSplit:
     description: stores the show ID parts
     properties:
       idNum:
+        example: 1
         type: integer
       name:
         example: show
@@ -151,6 +162,17 @@ definitions:
         type: string
       title:
         example: Show
+        type: string
+    type: object
+  show.ShowSeason:
+    properties:
+      episodes:
+        items:
+          $ref: '#/definitions/show.Episode'
+        type: array
+      serverID:
+        type: string
+      serverName:
         type: string
     type: object
 info:
@@ -221,7 +243,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/film.FilmSources'
+              $ref: '#/definitions/film.FilmSourcesEncrypted'
             type: array
       summary: Fetch film sources
       tags:
@@ -245,6 +267,29 @@ paths:
           schema:
             $ref: '#/definitions/show.ShowSearch'
       summary: Search for shows
+      tags:
+      - shows
+  /shows/vip/seasons:
+    get:
+      consumes:
+      - application/json
+      description: Fetch show seasons and episodes by id
+      parameters:
+      - description: Search Query
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/show.ShowSeason'
+            type: array
+      summary: Fetch show seasons and episodes
       tags:
       - shows
 swagger: "2.0"

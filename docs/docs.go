@@ -111,7 +111,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/film.FilmSources"
+                                "$ref": "#/definitions/film.FilmSourcesEncrypted"
                             }
                         }
                     }
@@ -145,6 +145,41 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/show.ShowSearch"
+                        }
+                    }
+                }
+            }
+        },
+        "/shows/vip/seasons": {
+            "get": {
+                "description": "Fetch show seasons and episodes by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Fetch show seasons and episodes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/show.ShowSeason"
+                            }
                         }
                     }
                 }
@@ -236,7 +271,7 @@ const docTemplate = `{
                 }
             }
         },
-        "film.FilmSources": {
+        "film.FilmSourcesEncrypted": {
             "type": "object",
             "properties": {
                 "server": {
@@ -248,21 +283,7 @@ const docTemplate = `{
                 "tracks": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "default": {
-                                "type": "boolean"
-                            },
-                            "file": {
-                                "type": "string"
-                            },
-                            "kind": {
-                                "type": "string"
-                            },
-                            "label": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/definitions/film.Track"
                     }
                 }
             }
@@ -272,7 +293,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "idNum": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
                     "type": "string",
@@ -284,12 +306,41 @@ const docTemplate = `{
                 }
             }
         },
+        "film.Track": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "boolean"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "show.Episode": {
+            "type": "object",
+            "properties": {
+                "episodeID": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "show.IdSplit": {
             "description": "stores the show ID parts",
             "type": "object",
             "properties": {
                 "idNum": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
                     "type": "string",
@@ -371,6 +422,23 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Show"
+                }
+            }
+        },
+        "show.ShowSeason": {
+            "type": "object",
+            "properties": {
+                "episodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/show.Episode"
+                    }
+                },
+                "serverID": {
+                    "type": "string"
+                },
+                "serverName": {
+                    "type": "string"
                 }
             }
         }

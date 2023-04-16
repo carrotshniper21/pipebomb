@@ -12,7 +12,7 @@ import (
 
 func GetFilmServer(filmid, reqType, remoteAddress, reqPath, reqQueryParams string) ([]FilmServer, error) {
 	c := colly.NewCollector()
-	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 
 	return getServerDataid(c, filmid)
 }

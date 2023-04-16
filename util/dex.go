@@ -1,86 +1,112 @@
-// film/dex.go
 package util
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
 	"encoding/base64"
-	"encoding/json"
-	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
-	"unicode"
+	"fmt"
 )
 
-func generateKey(salt []byte, output int) ([]byte, error) {
+func Dechiper(encoded_url string) []byte {
 	resp, err := http.Get("https://raw.githubusercontent.com/enimax-anime/key/e4/key.txt")
 	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+	key := string(body)
+
+	result, _ := DecryptString(key, encoded_url)
+	return result
+}
+
+var openSSLSaltHeader string = "Salted_" 
+
+type OpenSSLCreds struct {
+	key []byte
+	iv  []byte
+}
+
+func DecryptString(passphrase, encryptedBase64String string) ([]byte, error) {
+	data, err := base64.StdEncoding.DecodeString(encryptedBase64String)
+	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("error closing", err)
+	saltHeader := data[:aes.BlockSize]
+	if string(saltHeader[:7]) != openSSLSaltHeader {
+		return nil, fmt.Errorf("Does not appear to have been encrypted with OpenSSL, salt header missing.")
+	}
+	salt := saltHeader[8:]
+	creds, err := extractOpenSSLCreds([]byte(passphrase), salt)
+	if err != nil {
+		return nil, err
+	}
+	return decrypt(creds.key, creds.iv, data)
+}
+
+func decrypt(key, iv, data []byte) ([]byte, error) {
+	if len(data) == 0 || len(data)%aes.BlockSize != 0 {
+		return nil, fmt.Errorf("bad blocksize(%v), aes.BlockSize = %v\n", len(data), aes.BlockSize)
+	}
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	cbc := cipher.NewCBCDecrypter(c, iv)
+	cbc.CryptBlocks(data[aes.BlockSize:], data[aes.BlockSize:])
+	out, err := pkcs7Unpad(data[aes.BlockSize:], aes.BlockSize)
+	if out == nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func extractOpenSSLCreds(password, salt []byte) (OpenSSLCreds, error) {
+	m := make([]byte, 48)
+	prev := []byte{}
+	for i := 0; i < 3; i++ {
+		prev = hash(prev, password, salt)
+		copy(m[i*16:], prev)
+	}
+	return OpenSSLCreds{key: m[:32], iv: m[32:]}, nil
+}
+
+func hash(prev, password, salt []byte) []byte {
+	a := make([]byte, len(prev)+len(password)+len(salt))
+	copy(a, prev)
+	copy(a[len(prev):], password)
+	copy(a[len(prev)+len(password):], salt)
+	return md5sum(a)
+}
+
+func md5sum(data []byte) []byte {
+	h := md5.New()
+	h.Write(data)
+	return h.Sum(nil)
+}
+
+func pkcs7Unpad(data []byte, blocklen int) ([]byte, error) {
+	if blocklen <= 0 {
+		return nil, fmt.Errorf("invalid blocklen %d", blocklen)
+	}
+	if len(data)%blocklen != 0 || len(data) == 0 {
+		return nil, fmt.Errorf("invalid data len %d", len(data))
+	}
+	padlen := int(data[len(data)-1])
+	if padlen > blocklen || padlen == 0 {
+		return nil, fmt.Errorf("invalid padding")
+	}
+	pad := data[len(data)-padlen:]
+	for i := 0; i < padlen; i++ {
+		if pad[i] != byte(padlen) {
+			return nil, fmt.Errorf("invalid padding")
 		}
-	}(resp.Body)
-
-	secret, err := io.ReadAll(resp.Body) 
-	if err != nil {
-		return nil, err
 	}
-
-	key := md5.Sum(append(secret, salt...))
-	currentKey := key[:]
-	for len(currentKey) < output {
-		key = md5.Sum(append(key[:], secret...))
-		key = md5.Sum(append(key[:], salt...))
-		currentKey = append(currentKey, key[:]...)
-	}
-
-	return currentKey[:output], nil
+	return data[:len(data)-padlen], nil
 }
-
-func decipher(encodedURL string) (map[string]interface{}, error) {
-	s1, err := base64.StdEncoding.DecodeString(encodedURL)
-	if err != nil {
-		return nil, err
-	}
-
-	key, err := generateKey(s1[8:16], 48)
-	if err != nil {
-		return nil, err
-	}
-
-	block, err := aes.NewCipher(key[:32])
-	if err != nil {
-		return nil, err
-	}
-
-	decrypted := make([]byte, len(s1[16:]))
-	mode := cipher.NewCBCDecrypter(block, key[32:])
-	mode.CryptBlocks(decrypted, s1[16:])
-
-	decrypted = bytes.TrimLeftFunc(decrypted, unicode.IsSpace)
-	fmt.Printf("Decoded Data: %s\n", string(decrypted))
-
-	var result map[string]interface{}
-	fmt.Printf("Decoded Data Before Unmarshal: %s\n", string(decrypted))
-	err = json.Unmarshal(decrypted, &result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-func main(url string) (map[string]interface{}, error) {
-	url = "U2FsdGVkX1/bv0J3BD6JIOW7s2Me7qYvfGF7uD5yJSHTLIdj3cvnRpzsxMibTgCwGcNhi3YonZGTcObeSm3A7L3PR1I/WyG0MM6/qVoW1l+EW1v9VmyrETY6IRcDcQ9FnRTtfUVAIogkkmnKc5s0ABtQCGl6ZwC1H5hXJaWru19VIMxAKc/vU8tS4HA8eCmKr4vI5H+sL5cjb3RBu2Abv3WX/PgxlYgsq77xBSWS8PvnI9QHNK3weTuPekTubR9c2qoftbDZXytP2QSRAFksZaRRM2PXUof+GjHgPOUW6JpdZRK/Uc8UOI1xRWxjGcr2kMrvG8nlaB02aa+hJwUCh4/O2LaodllSUYsz1zrwrrEzIKNUOHbroOM0czUxNnPMmL+PWffbJbAKJcPV8wE4/E1h5i7k/HWR3guOKUPwxZe7tvyLPcRYZOI8hWvxCZGCPqTDHL4DiZkTGdNEjk9YjglLKzdnHvRuPcP9jezGhOQ="
-	decryptedURLs, err := decipher(url)
-	fmt.Println(decryptedURLs)
-	if err != nil {
-		return nil, err
-	}
-	return decryptedURLs, nil
-}
-

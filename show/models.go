@@ -10,9 +10,15 @@ type ShowServer struct {
 	LinkID     string `json:"linkID"`
 }
 
+type Episode struct {
+	Title string `json:"title"`
+	EpisodeID string `json:"episodeID"`
+}
+
 type ShowSeason struct {
 	SeasonName string `json:"serverName"`
 	SeasonID   string `json:"serverID"`
+	Episodes []Episode `json:"episodes"`
 }
 
 type ShowSources struct {
@@ -55,5 +61,5 @@ type ShowSearch struct {
 type IdSplit struct {
 	Type  string `json:"type" example:"show"`
 	Name  string `json:"name" example:"show"`
-	IdNum int    `json:"idNum" example:1`
+	IdNum int    `json:"idNum" example:"1"`
 }

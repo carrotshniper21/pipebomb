@@ -19,7 +19,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param id query string true "Server ID"
-// @Success 200 {array} film.FilmSources
+// @Success 200 {array} film.FilmSourcesEncrypted
 // @Router /films/vip/sources [get]
 func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	serverID := r.URL.Query().Get("id")
@@ -27,14 +27,13 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	remoteAddress := r.RemoteAddr
 	reqUrl := r.URL
 
-	sources := film.GetFilmSources(serverID, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
-	if sources == nil {
+	sources, err := film.GetFilmSources(serverID, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
+	if err != nil {
 		http.Error(w, "Error fetching film sources", http.StatusInternalServerError)
-		return
-	}
+		return }
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(sources)
+	err = json.NewEncoder(w).Encode(sources)
 	if err != nil {
 		fmt.Println("error writing response for film sources: ", err)
 	}
@@ -89,7 +88,7 @@ func searchFilms(query, reqType, remoteAddress, reqPath, reqQueryParams string) 
 		}
 	})
 
-	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://flixhq.to/search/" + query)
 	if err != nil {
 		return nil, err
@@ -148,7 +147,7 @@ func searchShows(query, reqType, remoteAddress, reqPath, reqQueryParams string) 
 		}
 	})
 
-	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://flixhq.to/search/" + query)
 	if err != nil {
 		return nil, err
@@ -187,7 +186,54 @@ func ShowSearch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("error writing response for film search: ", s)
+		fmt.Println("Error writing response for film search: ", s)
+		return
+	}
+}
+
+func showSeasons(query, reqType, remoteAddress, reqPath, reqQueryParams string) (map[string]show.ShowSeason, error) {
+	response, err := show.GetShowSeason(query)
+	if err != nil {
+		return nil, err
+	}
+	seasonsMap := make(map[string]show.ShowSeason)
+	for _, season := range response {
+		seasonsMap[season.SeasonName] = season
+	}
+
+	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+
+	return seasonsMap, nil
+}
+
+
+// @Summary Fetch show seasons and episodes
+// @Description Fetch show seasons and episodes by id
+// @Tags shows
+// @Accept json
+// @Produce json
+// @Param id query string true "Search Query"
+// @Success 200 {array} show.ShowSeason
+// @Router /shows/vip/seasons [get]
+func ShowSeason(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("id")
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
+
+	results, _ := showSeasons(query, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
+
+	responseBytes, err := json.Marshal(results)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("Error writing repsonse for show servers: ", s)
 		return
 	}
 }

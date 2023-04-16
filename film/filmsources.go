@@ -11,11 +11,12 @@ import (
 	"github.com/gocolly/colly"
 	"github.com/fatih/color"
 	"pipebomb/logging"
+	"pipebomb/util"
 )
 
-func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams string) *FilmSources {
+func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams string) (*FilmSourcesDecrypted, error) {
 	c := colly.NewCollector()
-	var filmSources *FilmSources
+	var filmSources *FilmSourcesEncrypted
 
 	c.OnResponse(func(r *colly.Response) {
 		var source FilmSource
@@ -28,16 +29,22 @@ func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams st
 		filmSources = response
 	})
 
-	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" '%s - %s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
 	if err != nil {
-		fmt.Println("error visiting url: ", err)
+		return nil, fmt.Errorf("Error visiting url: %w", err)
 	}
 
-	return filmSources
+	decryptedUrl := util.Dechiper(filmSources.Sources)
+	var source []Source
+	if err = json.Unmarshal(decryptedUrl, &source); err != nil {
+		return nil, err
+	}
+
+	return &FilmSourcesDecrypted{source, filmSources.Tracks, filmSources.Server}, nil
 }
 
-func getStream(url string) (*FilmSources, error) {
+func getStream(url string) (*FilmSourcesEncrypted, error) {
 	providerLinkRegex, _ := regexp.Compile(`(https?://[^\s/]+)`)
 	embedRegex, _ := regexp.Compile(`embed-(\d+)/([\w-]+)\??`)
 
@@ -66,17 +73,11 @@ func getStream(url string) (*FilmSources, error) {
 		}
 	}(resp.Body)
 
-	var response FilmSources
+	var response FilmSourcesEncrypted
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
-
-	//decryptedSources, err := util.Boobies(response.Sources)
-	//if err != nil {
-	//	fmt.Println("bruh sources error", err)
-	//}
-	//fmt.Println("decrypted?", decryptedSources)
 
 	return &response, nil
 }
