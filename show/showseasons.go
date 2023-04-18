@@ -1,6 +1,5 @@
 // pipebomb/show/showseasons.go
 package show
-
 import (
 	"strings"
 	"log"
@@ -40,7 +39,7 @@ func getSeasonData(c *colly.Collector, showid string) ([]ShowSeason, error) {
 		seasons = append(seasons, season)
 	})
 
-	if err := c.Visit("https://vipstream.tv/ajax/v2/tv/seasons/" + showid); err != nil {
+	if err := c.Visit(root + "/ajax/v2/tv/seasons/" + showid); err != nil {
 		return nil, err
 	}
 
@@ -60,7 +59,7 @@ func getEpisodeData(c *colly.Collector, seasonID string) ([]Episode, error) {
 		episodes = append(episodes, episode)
 	})
 
-	if err := c.Visit("https://vipstream.tv/ajax/v2/season/episodes/" + seasonID); err != nil {
+	if err := c.Visit(root + "/ajax/v2/season/episodes/" + seasonID); err != nil {
 		return nil, err
 	}
 

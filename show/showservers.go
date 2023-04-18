@@ -30,7 +30,7 @@ func getServerDataid(c *colly.Collector, episodeid string) ([]ShowServer, error)
 		servers = append(servers, ShowServer{ServerName: serverName, LinkID: linkID})
 	})
 
-	if err := c.Visit("https://vipstream.tv/ajax/v2/episode/servers/" + episodeid + "/#servers-list"); err != nil {
+	if err := c.Visit(root + "/ajax/v2/episode/servers/" + episodeid + "/#servers-list"); err != nil {
 		return nil, err
 	}
 

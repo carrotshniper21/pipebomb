@@ -31,7 +31,7 @@ func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams st
 	})
 
 	fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
-	err := c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
+	err := c.Visit(root + "/ajax/sources/" + serverID)
 	if err != nil {
 		return nil, err
 	}
