@@ -175,6 +175,35 @@ definitions:
       serverName:
         type: string
     type: object
+  show.ShowServer:
+    properties:
+      linkID:
+        type: string
+      serverName:
+        type: string
+    type: object
+  show.ShowSourcesEncrypted:
+    properties:
+      server:
+        type: integer
+      sources:
+        type: string
+      tracks:
+        items:
+          $ref: '#/definitions/show.Track'
+        type: array
+    type: object
+  show.Track:
+    properties:
+      default:
+        type: boolean
+      file:
+        type: string
+      kind:
+        type: string
+      label:
+        type: string
+    type: object
 info:
   contact: {}
   description: Pipebomb API for searching and streaming movies
@@ -290,6 +319,52 @@ paths:
               $ref: '#/definitions/show.ShowSeason'
             type: array
       summary: Fetch show seasons and episodes
+      tags:
+      - shows
+  /shows/vip/servers:
+    get:
+      consumes:
+      - application/json
+      description: Fetch show servers by episode ID
+      parameters:
+      - description: Episode ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/show.ShowServer'
+            type: array
+      summary: Fetch show servers
+      tags:
+      - shows
+  /shows/vip/sources:
+    get:
+      consumes:
+      - application/json
+      description: Fetch show servers by server ID
+      parameters:
+      - description: Server ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/show.ShowSourcesEncrypted'
+            type: array
+      summary: Fetch show sources
       tags:
       - shows
 swagger: "2.0"

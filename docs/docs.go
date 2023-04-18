@@ -184,6 +184,76 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/shows/vip/servers": {
+            "get": {
+                "description": "Fetch show servers by episode ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Fetch show servers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Episode ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/show.ShowServer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shows/vip/sources": {
+            "get": {
+                "description": "Fetch show servers by server ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Fetch show sources",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/show.ShowSourcesEncrypted"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -438,6 +508,51 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "serverName": {
+                    "type": "string"
+                }
+            }
+        },
+        "show.ShowServer": {
+            "type": "object",
+            "properties": {
+                "linkID": {
+                    "type": "string"
+                },
+                "serverName": {
+                    "type": "string"
+                }
+            }
+        },
+        "show.ShowSourcesEncrypted": {
+            "type": "object",
+            "properties": {
+                "server": {
+                    "type": "integer"
+                },
+                "sources": {
+                    "type": "string"
+                },
+                "tracks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/show.Track"
+                    }
+                }
+            }
+        },
+        "show.Track": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "boolean"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "label": {
                     "type": "string"
                 }
             }

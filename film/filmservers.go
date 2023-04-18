@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"strings"
 
+	"pipebomb/logging"
+
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
-	"pipebomb/logging"
 )
 
 func GetFilmServer(filmid, reqType, remoteAddress, reqPath, reqQueryParams string) ([]FilmServer, error) {
 	c := colly.NewCollector()
-	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+	fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 
 	return getServerDataid(c, filmid)
 }
@@ -26,8 +27,7 @@ func getServerDataid(c *colly.Collector, filmid string) ([]FilmServer, error) {
 		servers = append(servers, FilmServer{ServerName: serverName, LinkID: linkID})
 	})
 
-	err := c.Visit("https://vipstream.tv/ajax/movie/episodes/" + filmid)
-	if err != nil {
+	if err := c.Visit("https://vipstream.tv/ajax/movie/episodes/" + filmid); err != nil {
 		return nil, err
 	}
 

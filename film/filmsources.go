@@ -3,15 +3,16 @@ package film
 
 import (
 	"encoding/json"
-	"net/http"
-	"regexp"
 	"fmt"
 	"io"
+	"net/http"
+	"regexp"
 
-	"github.com/gocolly/colly"
-	"github.com/fatih/color"
 	"pipebomb/logging"
 	"pipebomb/util"
+
+	"github.com/fatih/color"
+	"github.com/gocolly/colly"
 )
 
 func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams string) (*FilmSourcesDecrypted, error) {
@@ -29,10 +30,10 @@ func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams st
 		filmSources = response
 	})
 
-fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
+	fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit("https://vipstream.tv/ajax/sources/" + serverID)
 	if err != nil {
-		return nil, fmt.Errorf("Error visiting url: %w", err)
+		return nil, err
 	}
 
 	decryptedUrl := util.Dechiper(filmSources.Sources)

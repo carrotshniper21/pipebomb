@@ -1,5 +1,29 @@
 package show
 
+type Source struct {
+    File    string `json:"file"`
+    Type    string `json:"type"`
+}
+
+type Track struct {
+    File    string `json:"file"`
+    Label   string `json:"label,omitempty"`
+    Kind    string `json:"kind"`
+    Default bool   `json:"default,omitempty"`
+}
+
+type ShowSourcesDecrypted struct {
+    Sources []Source `json:"sources"`
+    Tracks  []Track `json:"tracks"`
+    Server int `json:"server"`
+}
+
+type ShowSourcesEncrypted struct {
+    Sources string `json:"sources"`
+    Tracks  []Track `json:"tracks"`
+    Server int `json:"server"`
+}
+
 type ShowSource struct {
 	Link string `json:"link"`
 	Type string `json:"type"`
@@ -19,17 +43,6 @@ type ShowSeason struct {
 	SeasonName string `json:"serverName"`
 	SeasonID   string `json:"serverID"`
 	Episodes []Episode `json:"episodes"`
-}
-
-type ShowSources struct {
-    Sources string `json:"sources"`
-    Tracks  []struct {
-        File    string `json:"file"`
-        Label   string `json:"label,omitempty"`
-        Kind    string `json:"kind"`
-        Default bool   `json:"default,omitempty"`
-    } `json:"tracks"`
-    Server int `json:"server"`
 }
 
 // ShowResponse is the response struct

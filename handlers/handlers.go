@@ -13,6 +13,32 @@ import (
 	"pipebomb/show"
 )
 
+// @Summary Fetch show sources
+// @Description Fetch show servers by server ID
+// @Tags shows
+// @Accept json
+// @Produce json
+// @Param id query string true "Server ID"
+// @Success 200 {array} show.ShowSourcesEncrypted
+// @Router /shows/vip/sources [get]
+func FetchShowSources(w http.ResponseWriter, r *http.Request) {
+	serverID := r.URL.Query().Get("id")
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
+
+	sources, err := show.GetShowSources(serverID, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
+	if err != nil {
+		http.Error(w, "Error fetching show sources", http.StatusInternalServerError)
+		return }
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(sources)
+	if err != nil {
+		fmt.Println("error writing response for show sources: ", err)
+	}
+}
+
 // @Summary Fetch film sources
 // @Description Fetch film servers by server ID
 // @Tags films
@@ -234,6 +260,42 @@ func ShowSeason(w http.ResponseWriter, r *http.Request) {
 	_, s := w.Write(responseBytes)
 	if s != nil {
 		fmt.Println("Error writing repsonse for show servers: ", s)
+		return
+	}
+}
+
+// @Summary Fetch show servers
+// @Description Fetch show servers by episode ID
+// @Tags shows
+// @Accept  json
+// @Produce  json
+// @Param   id query string true "Episode ID"
+// @Success 200 {array} show.ShowServer
+// @Router /shows/vip/servers [get]
+func FetchShows(w http.ResponseWriter, r *http.Request) {
+	filmID := r.URL.Query().Get("id")
+	reqType := r.Method
+	remoteAddress := r.RemoteAddr
+	reqUrl := r.URL
+
+	servers, err := show.GetShowServer(filmID, reqType, remoteAddress, reqUrl.Path, reqUrl.RawQuery)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	responseBytes, err := json.Marshal(servers)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("error writing response for film servers: ", s)
 		return
 	}
 }
