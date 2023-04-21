@@ -1,3 +1,4 @@
+// pipebomb/film/models.go
 package film
 
 type FilmSource struct {

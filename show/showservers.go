@@ -1,3 +1,4 @@
+// pipebomb/show/showservers.go
 package show
 
 import (
@@ -9,9 +10,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
 )
-
-// TODO Fetch Film servers via id
-// TODO Add paramters for logging
 
 func GetShowServer(episodeid, reqType, remoteAddress, reqPath, reqQueryParams string) ([]ShowServer, error) {
 	c := colly.NewCollector()

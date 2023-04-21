@@ -29,8 +29,7 @@ func filmSearcher(filmUrl string) (*FilmSearch, error) {
 	setCountryCallback(c, &film)
 	setProductionCallback(c, &film)
 
-	err := c.Visit(filmUrl)
-	if err != nil {
+	if err := c.Visit(filmUrl); err != nil {
 		return nil, err
 	}
 

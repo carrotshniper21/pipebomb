@@ -1,4 +1,4 @@
-// logging.go
+// pipebomb/logging/logging.go
 package logging
 
 // Http logging for important messages BITCH!!!

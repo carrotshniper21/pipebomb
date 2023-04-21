@@ -1,4 +1,4 @@
-// film/filmsources.go
+// pipebomb/film/filmsources.go
 package film
 
 import (
@@ -48,7 +48,6 @@ func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams st
 func getStream(url string) (*FilmSourcesEncrypted, error) {
 	providerLinkRegex, _ := regexp.Compile(`(https?://[^\s/]+)`)
 	embedRegex, _ := regexp.Compile(`embed-(\d+)/([\w-]+)\??`)
-
 	providerLink := providerLinkRegex.FindString(url)
 	embedMatches := embedRegex.FindStringSubmatch(url)
 	embedType := embedMatches[1]

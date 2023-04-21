@@ -1,4 +1,4 @@
-// main.go
+// pipebomb/main.go
 package main
 
 import (

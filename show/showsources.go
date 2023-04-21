@@ -1,4 +1,4 @@
-// show/showsources.go
+// pipebomb/show/showsources.go
 package show
 
 import (
