@@ -110,7 +110,7 @@
                 }
             }
         },
-        "/shows/vip/search": {
+        "/series/vip/search": {
             "get": {
                 "description": "Search for shows by query",
                 "consumes": [
@@ -142,7 +142,7 @@
                 }
             }
         },
-        "/shows/vip/seasons": {
+        "/series/vip/seasons": {
             "get": {
                 "description": "Fetch show seasons and episodes by id",
                 "consumes": [
@@ -177,7 +177,7 @@
                 }
             }
         },
-        "/shows/vip/servers": {
+        "/series/vip/servers": {
             "get": {
                 "description": "Fetch show servers by episode ID",
                 "consumes": [
@@ -212,7 +212,7 @@
                 }
             }
         },
-        "/shows/vip/sources": {
+        "/series/vip/sources": {
             "get": {
                 "description": "Fetch show servers by server ID",
                 "consumes": [

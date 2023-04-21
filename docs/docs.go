@@ -118,7 +118,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shows/vip/search": {
+        "/series/vip/search": {
             "get": {
                 "description": "Search for shows by query",
                 "consumes": [
@@ -150,7 +150,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shows/vip/seasons": {
+        "/series/vip/seasons": {
             "get": {
                 "description": "Fetch show seasons and episodes by id",
                 "consumes": [
@@ -185,7 +185,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shows/vip/servers": {
+        "/series/vip/servers": {
             "get": {
                 "description": "Fetch show servers by episode ID",
                 "consumes": [
@@ -220,7 +220,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shows/vip/sources": {
+        "/series/vip/sources": {
             "get": {
                 "description": "Fetch show servers by server ID",
                 "consumes": [

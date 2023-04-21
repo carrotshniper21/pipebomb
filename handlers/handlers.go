@@ -21,7 +21,7 @@ import (
 // @Produce json
 // @Param id query string true "Server ID"
 // @Success 200 {array} show.ShowSourcesEncrypted
-// @Router /shows/vip/sources [get]
+// @Router /series/vip/sources [get]
 func FetchShowSources(w http.ResponseWriter, r *http.Request) {
 	serverID := r.URL.Query().Get("id")
 	reqType := r.Method
@@ -190,7 +190,7 @@ func searchShows(query, reqType, remoteAddress, reqPath, reqQueryParams string) 
 // @Produce  json
 // @Param   q query string true "Search Query"
 // @Success 200 {object} show.ShowSearch
-// @Router /shows/vip/search [get]
+// @Router /series/vip/search [get]
 func ShowSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	reqType := r.Method
@@ -241,7 +241,7 @@ func showSeasons(query, reqType, remoteAddress, reqPath, reqQueryParams string) 
 // @Produce json
 // @Param id query string true "Search Query"
 // @Success 200 {array} show.ShowSeason
-// @Router /shows/vip/seasons [get]
+// @Router /series/vip/seasons [get]
 func ShowSeason(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("id")
 	reqType := r.Method
@@ -272,7 +272,7 @@ func ShowSeason(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param   id query string true "Episode ID"
 // @Success 200 {array} show.ShowServer
-// @Router /shows/vip/servers [get]
+// @Router /series/vip/servers [get]
 func FetchShows(w http.ResponseWriter, r *http.Request) {
 	filmID := r.URL.Query().Get("id")
 	reqType := r.Method

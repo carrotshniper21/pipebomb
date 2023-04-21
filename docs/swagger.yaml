@@ -277,7 +277,7 @@ paths:
       summary: Fetch film sources
       tags:
       - films
-  /shows/vip/search:
+  /series/vip/search:
     get:
       consumes:
       - application/json
@@ -298,7 +298,7 @@ paths:
       summary: Search for shows
       tags:
       - shows
-  /shows/vip/seasons:
+  /series/vip/seasons:
     get:
       consumes:
       - application/json
@@ -321,7 +321,7 @@ paths:
       summary: Fetch show seasons and episodes
       tags:
       - shows
-  /shows/vip/servers:
+  /series/vip/servers:
     get:
       consumes:
       - application/json
@@ -344,7 +344,7 @@ paths:
       summary: Fetch show servers
       tags:
       - shows
-  /shows/vip/sources:
+  /series/vip/sources:
     get:
       consumes:
       - application/json
