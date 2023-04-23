@@ -2,19 +2,24 @@
 package main
 
 import (
-	"fmt"
-	"pipebomb/logging"
 	"pipebomb/server"
-
-	"github.com/fatih/color"	
 )
 
+
 // @title Pipebomb API
-// @version 1.0
+// @version 6.9
 // @description Pipebomb API for searching and streaming movies
-// @BasePath /api
+// @termsOfService http://ani-j.netlify.app/tos/
+// @contact.name API Support
+// @contact.url https://github.com/ani-social
+// @contact.email support@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host anij.bytecats.codes
+// @BaseURL anij.bytecats.codes 
+// @BasePath /pipebomb/api
+// @schemes https http
 func main() {
-	fmt.Println(color.GreenString(logging.HttpLogger()[0] + ":"), color.HiWhiteString(" Pipebomb running on http://127.0.0.1:8001 (Press CTRL+C to quit)"))
 	port := "8001"
 	server.StartServer(port)
 }

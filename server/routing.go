@@ -3,13 +3,17 @@ package server
 
 import (
 	"pipebomb/handlers"
+	"pipebomb/logging"
+	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // InitRouter initializes the router
 func InitRouter() *mux.Router {
+	color.Blue("Starting server on port http://127.0.0.1:8001")
 	r := mux.NewRouter()
+	r.Use(logging.LoggingMiddleware)
 	r.HandleFunc("/", handlers.Home)
 	r.PathPrefix("/docs").Handler(httpSwagger.WrapHandler)
 	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch)
@@ -19,6 +23,11 @@ func InitRouter() *mux.Router {
 	r.HandleFunc("/api/series/vip/seasons", handlers.ShowSeason)
 	r.HandleFunc("/api/series/vip/servers", handlers.FetchShows)
 	r.HandleFunc("/api/series/vip/sources", handlers.FetchShowSources)
+  r.HandleFunc("/profiles/api/users", handlers.GetUsers).Methods("GET")
+  r.HandleFunc("/profiles/api/users", handlers.CreateUser).Methods("POST")
+  r.HandleFunc("/profiles/api/users/{username}", handlers.GetUser).Methods("GET")
+  r.HandleFunc("/profiles/api/users/{username}", handlers.UpdateUser).Methods("PUT")
+  r.HandleFunc("/profiles/api/users/{username}", handlers.DeleteUser).Methods("DELETE")
 
 	return r
 }

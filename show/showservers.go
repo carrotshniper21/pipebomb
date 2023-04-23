@@ -2,18 +2,13 @@
 package show
 
 import (
-	"fmt"
 	"strings"
 
-	"pipebomb/logging"
-
-	"github.com/fatih/color"
 	"github.com/gocolly/colly"
 )
 
-func GetShowServer(episodeid, reqType, remoteAddress, reqPath, reqQueryParams string) ([]ShowServer, error) {
+func GetShowServer(episodeid string) ([]ShowServer, error) {
 	c := colly.NewCollector()
-	fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 
 	return getServerDataid(c, episodeid)
 }

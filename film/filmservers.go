@@ -2,18 +2,13 @@
 package film
 
 import (
-	"fmt"
 	"strings"
 
-	"pipebomb/logging"
-
-	"github.com/fatih/color"
 	"github.com/gocolly/colly"
 )
 
-func GetFilmServer(filmid, reqType, remoteAddress, reqPath, reqQueryParams string) ([]FilmServer, error) {
+func GetFilmServer(filmid string) ([]FilmServer, error) {
 	c := colly.NewCollector()
-	fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 
 	return getServerDataid(c, filmid)
 }

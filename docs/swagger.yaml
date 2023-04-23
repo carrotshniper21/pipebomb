@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /pipebomb/api
 definitions:
   film.FilmSearch:
     description: stores the film data
@@ -91,6 +91,50 @@ definitions:
       kind:
         type: string
       label:
+        type: string
+    type: object
+  profiles.Achievement:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  profiles.Profile:
+    properties:
+      achievements:
+        items:
+          $ref: '#/definitions/profiles.Achievement'
+        type: array
+      bio:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      philosophy:
+        type: string
+      socialLinks:
+        items:
+          $ref: '#/definitions/profiles.Social'
+        type: array
+    type: object
+  profiles.Social:
+    properties:
+      icon:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  profiles.User:
+    properties:
+      avatar:
+        type: string
+      profile:
+        $ref: '#/definitions/profiles.Profile'
+      username:
         type: string
     type: object
   show.Episode:
@@ -204,11 +248,19 @@ definitions:
       label:
         type: string
     type: object
+host: anij.bytecats.codes
 info:
-  contact: {}
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: https://github.com/ani-social
   description: Pipebomb API for searching and streaming movies
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://ani-j.netlify.app/tos/
   title: Pipebomb API
-  version: "1.0"
+  version: "6.9"
 paths:
   /films/vip/search:
     get:
@@ -367,4 +419,117 @@ paths:
       summary: Fetch show sources
       tags:
       - shows
+  /users:
+    get:
+      description: Retrieve a list of all users
+      operationId: get-users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/profiles.User'
+            type: array
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the given data
+      operationId: create-user
+      parameters:
+      - description: User to be created
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/profiles.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profiles.User'
+      summary: Create a new user
+      tags:
+      - Users
+  /users/{username}:
+    delete:
+      description: Delete a user by their username
+      operationId: delete-user
+      parameters:
+      - description: Username of the user to be deleted
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profiles.User'
+        "404":
+          description: User not found
+      summary: Delete a user
+      tags:
+      - Users
+    get:
+      description: Retrieve a user by their username
+      operationId: get-user
+      parameters:
+      - description: Username of the user to be fetched
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profiles.User'
+        "404":
+          description: User not found
+      summary: Get a specific user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update a user's data by their username
+      operationId: update-user
+      parameters:
+      - description: Username of the user to be updated
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Updated user data
+        in: body
+        name: updatedUser
+        required: true
+        schema:
+          $ref: '#/definitions/profiles.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profiles.User'
+        "404":
+          description: User not found
+      summary: Update a user
+      tags:
+      - Users
+schemes:
+- https
+- http
 swagger: "2.0"

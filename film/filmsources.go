@@ -8,14 +8,12 @@ import (
 	"net/http"
 	"regexp"
 
-	"pipebomb/logging"
 	"pipebomb/util"
 
-	"github.com/fatih/color"
 	"github.com/gocolly/colly"
 )
 
-func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams string) (*FilmSourcesDecrypted, error) {
+func GetFilmSources(serverID string) (*FilmSourcesDecrypted, error) {
 	c := colly.NewCollector()
 	var filmSources *FilmSourcesEncrypted
 
@@ -30,7 +28,6 @@ func GetFilmSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams st
 		filmSources = response
 	})
 
-	fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
 	err := c.Visit(root + "/ajax/sources/" + serverID)
 	if err != nil {
 		return nil, err

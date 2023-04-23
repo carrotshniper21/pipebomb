@@ -8,14 +8,12 @@ import (
     "net/http"
     "regexp"
 
-    "pipebomb/logging"
     "pipebomb/util"
 
-    "github.com/fatih/color"
     "github.com/gocolly/colly"
 )
 
-func GetShowSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams string) (*ShowSourcesDecrypted, error) {
+func GetShowSources(serverID string) (*ShowSourcesDecrypted, error) {
     c := colly.NewCollector()
     var showSources *ShowSourcesEncrypted
 
@@ -30,7 +28,6 @@ func GetShowSources(serverID, reqType, remoteAddress, reqPath, reqQueryParams st
         showSources = response
     })
 
-    fmt.Println(color.GreenString(logging.HttpLogger()[0]+":"), color.HiWhiteString(" %s - '%s %s?%s'", remoteAddress, reqType, reqPath, reqQueryParams))
     err := c.Visit(root + "/ajax/sources/" + serverID)
     if err != nil {
         return nil, err
