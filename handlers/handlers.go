@@ -17,7 +17,7 @@ import (
 
 // @Summary Fetch show sources
 // @Description Fetch show servers by server ID
-// @Tags shows
+// @Tags Series
 // @Accept json
 // @Produce json
 // @Param id query string true "Server ID"
@@ -40,7 +40,7 @@ func FetchShowSources(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Fetch film sources
 // @Description Fetch film servers by server ID
-// @Tags films
+// @Tags Films
 // @Accept json
 // @Produce json
 // @Param id query string true "Server ID"
@@ -63,7 +63,7 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Fetch film servers
 // @Description Fetch film servers by film ID
-// @Tags films
+// @Tags Films
 // @Accept  json
 // @Produce  json
 // @Param   id query string true "Film ID"
@@ -117,7 +117,7 @@ func searchFilms(query string) (interface{}, error) {
 
 // @Summary Search for films
 // @Description Search for films by query
-// @Tags films
+// @Tags Films
 // @Accept  json
 // @Produce  json
 // @Param   q query string true "Search Query"
@@ -171,7 +171,7 @@ func searchShows(query string) (interface{}, error) {
 
 // @Summary Search for shows
 // @Description Search for shows by query
-// @Tags shows
+// @Tags Series
 // @Accept  json
 // @Produce  json
 // @Param   q query string true "Search Query"
@@ -217,7 +217,7 @@ func showSeasons(query string) (map[string]show.ShowSeason, error) {
 
 // @Summary Fetch show seasons and episodes
 // @Description Fetch show seasons and episodes by id
-// @Tags shows
+// @Tags Series
 // @Accept json
 // @Produce json
 // @Param id query string true "Search Query"
@@ -245,7 +245,7 @@ func ShowSeason(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Fetch show servers
 // @Description Fetch show servers by episode ID
-// @Tags shows
+// @Tags Series
 // @Accept  json
 // @Produce  json
 // @Param   id query string true "Episode ID"
@@ -421,6 +421,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
     http.NotFound(w, r)
 }
+
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
