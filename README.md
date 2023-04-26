@@ -1,3 +1,3 @@
 # pipebomb
 
-### pip-api rewrite in golang
+### pip-api rewrite in go
