@@ -25,8 +25,11 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 			// Log the request body with pretty-printed JSON
 			prettyBody := pretty.Color(pretty.Pretty(bodyBytes), pretty.TerminalStyle)
-			color.Cyan("Request body: \n%s", string(prettyBody))
-
+      if string(prettyBody) != "" {
+        color.Cyan("Request body: \n%s", string(prettyBody))
+      } else {
+			  color.Cyan("Request body: None\n")
+      }
 			// Replace the request body with a new reader, so it can be read again by the handlers
 			r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		}
@@ -37,6 +40,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 		// Log the response status code
 		color.Magenta("Response status: %d", recorder.statusCode)
+    color.Black("-------------------")
 	})
 }
 

@@ -25,246 +25,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/films/vip/search": {
-            "get": {
-                "description": "Search for films by query",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "films"
-                ],
-                "summary": "Search for films",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search Query",
-                        "name": "q",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/film.FilmSearch"
-                        }
-                    }
-                }
-            }
-        },
-        "/films/vip/servers": {
-            "get": {
-                "description": "Fetch film servers by film ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "films"
-                ],
-                "summary": "Fetch film servers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Film ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/film.FilmServer"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/films/vip/sources": {
-            "get": {
-                "description": "Fetch film servers by server ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "films"
-                ],
-                "summary": "Fetch film sources",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Server ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/film.FilmSourcesEncrypted"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/series/vip/search": {
-            "get": {
-                "description": "Search for shows by query",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shows"
-                ],
-                "summary": "Search for shows",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search Query",
-                        "name": "q",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/show.ShowSearch"
-                        }
-                    }
-                }
-            }
-        },
-        "/series/vip/seasons": {
-            "get": {
-                "description": "Fetch show seasons and episodes by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shows"
-                ],
-                "summary": "Fetch show seasons and episodes",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search Query",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/show.ShowSeason"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/series/vip/servers": {
-            "get": {
-                "description": "Fetch show servers by episode ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shows"
-                ],
-                "summary": "Fetch show servers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Episode ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/show.ShowServer"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/series/vip/sources": {
-            "get": {
-                "description": "Fetch show servers by server ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shows"
-                ],
-                "summary": "Fetch show sources",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Server ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/show.ShowSourcesEncrypted"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users": {
+        "/api/profiles/users": {
             "get": {
                 "description": "Retrieve a list of all users",
                 "produces": [
@@ -321,7 +82,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{username}": {
+        "/api/profiles/users/{username}": {
             "get": {
                 "description": "Retrieve a user by their username",
                 "produces": [
@@ -424,6 +185,245 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "User not found"
+                    }
+                }
+            }
+        },
+        "/films/vip/search": {
+            "get": {
+                "description": "Search for films by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Films"
+                ],
+                "summary": "Search for films",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/film.FilmSearch"
+                        }
+                    }
+                }
+            }
+        },
+        "/films/vip/servers": {
+            "get": {
+                "description": "Fetch film servers by film ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Films"
+                ],
+                "summary": "Fetch film servers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Film ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/film.FilmServer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/films/vip/sources": {
+            "get": {
+                "description": "Fetch film servers by server ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Films"
+                ],
+                "summary": "Fetch film sources",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/film.FilmSourcesEncrypted"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/series/vip/search": {
+            "get": {
+                "description": "Search for shows by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Series"
+                ],
+                "summary": "Search for shows",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/show.ShowSearch"
+                        }
+                    }
+                }
+            }
+        },
+        "/series/vip/seasons": {
+            "get": {
+                "description": "Fetch show seasons and episodes by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Series"
+                ],
+                "summary": "Fetch show seasons and episodes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/show.ShowSeason"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/series/vip/servers": {
+            "get": {
+                "description": "Fetch show servers by episode ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Series"
+                ],
+                "summary": "Fetch show servers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Episode ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/show.ShowServer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/series/vip/sources": {
+            "get": {
+                "description": "Fetch show servers by server ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Series"
+                ],
+                "summary": "Fetch show sources",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/show.ShowSourcesEncrypted"
+                            }
+                        }
                     }
                 }
             }
@@ -811,6 +811,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "Pipebomb API for searching and streaming movies",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

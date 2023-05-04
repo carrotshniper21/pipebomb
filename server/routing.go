@@ -23,11 +23,11 @@ func InitRouter() *mux.Router {
 	r.HandleFunc("/api/series/vip/seasons", handlers.ShowSeason)
 	r.HandleFunc("/api/series/vip/servers", handlers.FetchShows)
 	r.HandleFunc("/api/series/vip/sources", handlers.FetchShowSources)
-  r.HandleFunc("/profiles/api/users", handlers.GetUsers).Methods("GET")
-  r.HandleFunc("/profiles/api/users", handlers.CreateUser).Methods("POST")
-  r.HandleFunc("/profiles/api/users/{username}", handlers.GetUser).Methods("GET")
-  r.HandleFunc("/profiles/api/users/{username}", handlers.UpdateUser).Methods("PUT")
-  r.HandleFunc("/profiles/api/users/{username}", handlers.DeleteUser).Methods("DELETE")
+  r.HandleFunc("/api/profiles/users", handlers.GetUsers).Methods("GET")
+  r.HandleFunc("/api/profiles/users", handlers.CreateUser).Methods("POST")
+  r.HandleFunc("/api/profiles/users/{username}", handlers.GetUser).Methods("GET")
+  r.HandleFunc("/api/profiles/users/{username}", handlers.UpdateUser).Methods("PUT")
+  r.HandleFunc("/api/profiles/users/{username}", handlers.DeleteUser).Methods("DELETE")
 
 	return r
 }

@@ -283,7 +283,7 @@ func FetchShows(w http.ResponseWriter, r *http.Request) {
 // @Tags Users
 // @Produce     json
 // @Success     200 {array} profiles.User
-// @Router          profiles/api/users [get]
+// @Router          /api/profiles/users [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
     color.Green("GET request received for all users")
     w.Header().Set("Content-Type", "application/json")
@@ -298,7 +298,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 // @Produce     json
 // @Param           user    body        profiles.User    true    "User to be created"
 // @Success     200     {object}    profiles.User
-// @Router          profiles/api/users [post]
+// @Router          /api/profiles/users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
     color.Cyan("POST request received to create a new user")
     w.Header().Set("Content-Type", "application/json")
@@ -321,7 +321,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Param           username    path        string  true    "Username of the user to be fetched"
 // @Success     200         {object}    profiles.User
 // @Failure     404         "User not found"
-// @Router          profiles/api/users/{username} [get]
+// @Router          /api/profiles/users/{username} [get]
 func GetUser(w http.ResponseWriter, r *http.Request) {
     color.Yellow("GET request received for a specific user")
     w.Header().Set("Content-Type", "application/json")
@@ -346,7 +346,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // @Param           updatedUser body        profiles.User    true    "Updated user data"
 // @Success     200         {object}    profiles.User
 // @Failure     404         "User not found"
-// @Router          profiles/api/users/{username} [put]
+// @Router          /api/profiles/users/{username} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
     color.Magenta("PUT request received to update a user")
     w.Header().Set("Content-Type", "application/json")
@@ -400,7 +400,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Param           username    path        string  true    "Username of the user to be deleted"
 // @Success     200         {object}    profiles.User
 // @Failure     404         "User not found"
-// @Router          profiles/api/users/{username} [delete]
+// @Router          /api/profiles/users/{username} [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
     color.Red("DELETE request received to delete a user")
     w.Header().Set("Content-Type", "application/json")
