@@ -173,7 +173,7 @@ func setProductionCallback(c *colly.Collector, show *ShowSearch) {
 }
 
 // ProcessLink processes the link and returns a ShowStruct
-func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *ShowSearch {
+func processLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *ShowSearch {
 	showid := elem.Attr("href")
 	if strings.Contains(showid, "/tv/watch") {
 		absLink := root + showid
@@ -191,4 +191,25 @@ func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *ShowSearch {
 	}
 
 	return nil
+}
+
+func ProcessQuery(query string) (interface{}, error) {
+    visitedLinks := sync.Map{}
+    c := colly.NewCollector()
+
+    var results []*ShowSearch
+
+    c.OnHTML("a[href]", func(elem *colly.HTMLElement) {
+        show := processLink(elem, &visitedLinks)
+        if show != nil {
+            results = append(results, show)
+        }
+    })
+
+    err := c.Visit("https://flixhq.to/search/" + query)
+    if err != nil {
+        return nil, err
+    }
+
+    return results, nil
 }

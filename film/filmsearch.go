@@ -172,8 +172,9 @@ func setProductionCallback(c *colly.Collector, film *FilmSearch) {
 }
 
 // ProcessLink processes the link and returns a FilmStruct
-func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmSearch {
+func processLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmSearch {
 	filmid := elem.Attr("href")
+
 	if strings.Contains(filmid, "/movie/watch") {
 		absLink := root + filmid
 		if _, visited := visitedLinks.Load(absLink); visited {
@@ -190,4 +191,24 @@ func ProcessLink(elem *colly.HTMLElement, visitedLinks *sync.Map) *FilmSearch {
 	}
 
 	return nil
+}
+
+func ProcessQuery(query string) (interface{}, error) {
+	visitedLinks := sync.Map{}
+	c := colly.NewCollector()
+
+	var results []*FilmSearch
+
+	c.OnHTML("a[href]", func(elem *colly.HTMLElement) {
+		film := processLink(elem, &visitedLinks)
+		if film != nil {
+			results = append(results, film)
+		}
+	})
+
+	if err := c.Visit(root + "/search/" + query); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }

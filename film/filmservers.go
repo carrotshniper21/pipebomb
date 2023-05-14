@@ -7,12 +7,12 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetFilmServer(filmid string) ([]FilmServer, error) {
+func GetFilmServer(filmId string) ([]FilmServer, error) {
 	c := colly.NewCollector()
 
-	return getServerDataid(c, filmid)
+	return getServerDataid(c, filmId)
 }
-func getServerDataid(c *colly.Collector, filmid string) ([]FilmServer, error) {
+func getServerDataid(c *colly.Collector, filmId string) ([]FilmServer, error) {
 	servers := []FilmServer{}
 
 	c.OnHTML("a[data-linkid]", func(e *colly.HTMLElement) {
@@ -22,7 +22,7 @@ func getServerDataid(c *colly.Collector, filmid string) ([]FilmServer, error) {
 		servers = append(servers, FilmServer{ServerName: serverName, LinkID: linkID})
 	})
 
-	if err := c.Visit(root + "/ajax/movie/episodes/" + filmid); err != nil {
+	if err := c.Visit(root + "/ajax/movie/episodes/" + filmId); err != nil {
 		return nil, err
 	}
 

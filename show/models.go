@@ -47,14 +47,14 @@ type ShowSeason struct {
 }
 
 // ShowResponse is the response struct
-// @Description is the response struct
+//	@Description	is the response struct
 type ShowSearchResponse struct {
 	Status string      `json:"status" example:"success"`
 	Show   *ShowSearch `json:"show"`
 }
 
 // ShowStruct stores the show data
-// @Description stores the show data
+//	@Description	stores the show data
 type ShowSearch struct {
 	Href        string   `json:"href" example:"https://example.com/show/1"`
 	Poster      string   `json:"poster" example:"https://example.com/poster/1.jpg"`
@@ -71,7 +71,7 @@ type ShowSearch struct {
 }
 
 // IdSplit stores the show ID parts
-// @Description stores the show ID parts
+//	@Description	stores the show ID parts
 type IdSplit struct {
 	Type  string `json:"type" example:"show"`
 	Name  string `json:"name" example:"show"`

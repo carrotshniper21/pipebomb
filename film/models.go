@@ -36,14 +36,14 @@ type FilmSourcesEncrypted struct {
 }
 
 // FilmResponse is the response struct
-// @Description is the response struct
+//	@Description	is the response struct
 type FilmSearchResponse struct {
 	Status string      `json:"status" example:"success"`
 	Film   *FilmSearch `json:"film"`
 }
 
 // FilmStruct stores the film data
-// @Description stores the film data
+//	@Description	stores the film data
 type FilmSearch struct {
 	Href        string   `json:"href" example:"https://example.com/film/1"`
 	Poster      string   `json:"poster" example:"https://example.com/poster/1.jpg"`
@@ -60,7 +60,7 @@ type FilmSearch struct {
 }
 
 // IdSplit stores the film ID parts
-// @Description stores the film ID parts
+//	@Description	stores the film ID parts
 type IdSplit struct {
 	Type  string `json:"type" example:"movie"`
 	Name  string `json:"name" example:"film"`

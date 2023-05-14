@@ -13,7 +13,7 @@ import (
     "github.com/gocolly/colly"
 )
 
-func GetShowSources(serverID string) (*ShowSourcesDecrypted, error) {
+func GetShowSources(serverId string) (*ShowSourcesDecrypted, error) {
     c := colly.NewCollector()
     var showSources *ShowSourcesEncrypted
 
@@ -28,7 +28,7 @@ func GetShowSources(serverID string) (*ShowSourcesDecrypted, error) {
         showSources = response
     })
 
-    err := c.Visit(root + "/ajax/sources/" + serverID)
+    err := c.Visit(root + "/ajax/sources/" + serverId)
     if err != nil {
         return nil, err
     }

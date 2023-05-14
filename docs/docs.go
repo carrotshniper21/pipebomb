@@ -406,7 +406,7 @@ const docTemplate = `{
         },
         "/series/vip/seasons": {
             "get": {
-                "description": "Fetch show seasons and episodes by id",
+                "description": "Fetch show seasons and episodes by show ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -420,7 +420,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Search Query",
+                        "description": "Show ID",
                         "name": "id",
                         "in": "query",
                         "required": true

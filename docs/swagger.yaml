@@ -602,9 +602,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetch show seasons and episodes by id
+      description: Fetch show seasons and episodes by show ID
       parameters:
-      - description: Search Query
+      - description: Show ID
         in: query
         name: id
         required: true

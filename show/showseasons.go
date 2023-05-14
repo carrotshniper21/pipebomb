@@ -1,5 +1,6 @@
 // pipebomb/show/showseasons.go
 package show
+
 import (
 	"strings"
 	"log"
@@ -7,18 +8,18 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetShowSeason(showid string) ([]ShowSeason, error) {
-	c := colly.NewCollector()
+func GetShowSeasons(showid string) (map[string]ShowSeason, error) {
+	c := colly.NewCollector() 
 
-	seasons, err := getSeasonData(c, showid)
-	if err != nil {
-		log.Println(err)
-		return nil, err
+	response, _ := getSeasonData(c, showid)
+
+	seasonsMap := make(map[string]ShowSeason)
+	for _, season := range response {
+		seasonsMap[season.SeasonName] = season
 	}
 
-	return seasons, nil
+	return seasonsMap, nil
 }
-
 
 func getSeasonData(c *colly.Collector, showid string) ([]ShowSeason, error) {
 	seasons := []ShowSeason{}

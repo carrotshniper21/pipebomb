@@ -13,7 +13,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetFilmSources(serverID string) (*FilmSourcesDecrypted, error) {
+func GetFilmSources(serverId string) (*FilmSourcesDecrypted, error) {
 	c := colly.NewCollector()
 	var filmSources *FilmSourcesEncrypted
 
@@ -28,7 +28,7 @@ func GetFilmSources(serverID string) (*FilmSourcesDecrypted, error) {
 		filmSources = response
 	})
 
-	err := c.Visit(root + "/ajax/sources/" + serverID)
+	err := c.Visit(root + "/ajax/sources/" + serverId)
 	if err != nil {
 		return nil, err
 	}

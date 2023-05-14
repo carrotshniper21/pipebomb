@@ -7,13 +7,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetShowServer(episodeid string) ([]ShowServer, error) {
+func GetShowServer(episodeId string) ([]ShowServer, error) {
 	c := colly.NewCollector()
 
-	return getServerDataid(c, episodeid)
+	return getServerDataid(c, episodeId)
 }
 
-func getServerDataid(c *colly.Collector, episodeid string) ([]ShowServer, error) {
+func getServerDataid(c *colly.Collector, episodeId string) ([]ShowServer, error) {
 	servers := []ShowServer{}
 
 	c.OnHTML("a[data-id]", func(e *colly.HTMLElement) {
@@ -23,7 +23,7 @@ func getServerDataid(c *colly.Collector, episodeid string) ([]ShowServer, error)
 		servers = append(servers, ShowServer{ServerName: serverName, LinkID: linkID})
 	})
 
-	if err := c.Visit(root + "/ajax/v2/episode/servers/" + episodeid + "/#servers-list"); err != nil {
+	if err := c.Visit(root + "/ajax/v2/episode/servers/" + episodeId + "/#servers-list"); err != nil {
 		return nil, err
 	}
 

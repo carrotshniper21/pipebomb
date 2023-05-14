@@ -89,13 +89,16 @@ func AssignUrlValues(c *colly.Collector, searchGql string, variablesJSON []byte)
 	return string(bodyBytes)
 }
 
-// ProcessQuery processes a query and returns a AnimeStruct
-func ProcessQuery(query string) *AnimeSearch {
-	anime, err := animeSearcher(query)
-	if err != nil {
-		return nil
-	}
+// ProcessQuery processes a query and returns a (interface{], error) 
+func ProcessQuery(query string) (interface{}, error) {
+	var results []*AnimeSearch
 
-	return anime
+	anime, _ := animeSearcher(query)
+
+  if anime != nil {
+    results = append(results, anime)
+  }
+
+  return results, nil
 }
 
