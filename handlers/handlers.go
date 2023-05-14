@@ -489,8 +489,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
     username := params["username"]
 
-    if username != "Space Mommy" || username != "Space%20Mommy" {
-
+    if username != "Space Mommy" {
         for i, user := range profiles.Users {
             if user.Username == username {
                 profiles.Users = append(profiles.Users[:i], profiles.Users[i+1:]...)

@@ -3,7 +3,6 @@ package anime
 import (
 	"encoding/json"
 	"log"
-	"fmt"
 
 	"github.com/gocolly/colly"
 )
@@ -38,7 +37,6 @@ func animeSources(showId, translationType, episodeString string) (*AnimeSource, 
 	apiReq := AssignUrlValues(c, searchGql, variablesJSON)
 
 	c.OnResponse(func(r *colly.Response) {
-		fmt.Println(string(r.Body))
 		err := json.Unmarshal(r.Body, &anime)
 		if err != nil {
 			log.Fatalf("Error unmarshalling variables: %s", err)
