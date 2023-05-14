@@ -23,6 +23,8 @@ func InitRouter() *mux.Router {
 	r.HandleFunc("/api/series/vip/seasons", handlers.ShowSeason)
 	r.HandleFunc("/api/series/vip/servers", handlers.FetchShows)
 	r.HandleFunc("/api/series/vip/sources", handlers.FetchShowSources)
+	r.HandleFunc("/api/anime/all/search", handlers.AnimeSearch)
+	r.HandleFunc("/api/anime/all/sources", handlers.FetchAnimeSources)
   r.HandleFunc("/api/profiles/users", handlers.GetUsers).Methods("GET")
   r.HandleFunc("/api/profiles/users", handlers.CreateUser).Methods("POST")
   r.HandleFunc("/api/profiles/users/{username}", handlers.GetUser).Methods("GET")

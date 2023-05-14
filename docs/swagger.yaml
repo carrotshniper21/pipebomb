@@ -1,5 +1,89 @@
 basePath: /pipebomb/api
 definitions:
+  anime.AnimeSearch:
+    properties:
+      data:
+        properties:
+          shows:
+            properties:
+              edges:
+                items:
+                  properties:
+                    __typename:
+                      type: string
+                    _id:
+                      type: string
+                    airedStart:
+                      type: object
+                    availableEpisodes:
+                      properties:
+                        dub:
+                          type: integer
+                        raw:
+                          type: integer
+                        sub:
+                          type: integer
+                      type: object
+                    englishName: {}
+                    episodeCount: {}
+                    episodeDuration: {}
+                    lastUpdateEnd:
+                      type: string
+                    name:
+                      type: string
+                    nativeName: {}
+                    thumbnail:
+                      type: string
+                    type: {}
+                  type: object
+                type: array
+            type: object
+        type: object
+    type: object
+  anime.AnimeSource:
+    properties:
+      data:
+        properties:
+          episode:
+            properties:
+              episodeString:
+                type: string
+              sourceUrls:
+                items:
+                  properties:
+                    className:
+                      type: string
+                    downloads:
+                      properties:
+                        downloadUrl:
+                          type: string
+                        sourceName:
+                          type: string
+                      type: object
+                    mobile:
+                      properties:
+                        downloadUrl:
+                          type: string
+                        sourceName:
+                          type: string
+                      type: object
+                    priority:
+                      type: number
+                    sandbox:
+                      type: string
+                    sourceName:
+                      type: string
+                    sourceUrl:
+                      type: string
+                    streamerId:
+                      type: string
+                    type:
+                      type: string
+                  type: object
+                type: array
+            type: object
+        type: object
+    type: object
   film.FilmSearch:
     description: stores the film data
     properties:
@@ -262,6 +346,60 @@ info:
   title: Pipebomb API
   version: "6.9"
 paths:
+  /anime/all/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for anime by query
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/anime.AnimeSearch'
+      summary: Search for anime
+      tags:
+      - Anime
+  /anime/all/sources:
+    get:
+      consumes:
+      - application/json
+      description: Fetch anime sources by show ID
+      parameters:
+      - description: anime ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: translation Type
+        in: query
+        name: tt
+        required: true
+        type: string
+      - description: episode Number
+        in: query
+        name: e
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/anime.AnimeSource'
+            type: array
+      summary: Fetch anime sources
+      tags:
+      - Anime
   /api/profiles/users:
     get:
       description: Retrieve a list of all users

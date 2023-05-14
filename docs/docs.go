@@ -25,6 +25,87 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/anime/all/search": {
+            "get": {
+                "description": "Search for anime by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anime"
+                ],
+                "summary": "Search for anime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/anime.AnimeSearch"
+                        }
+                    }
+                }
+            }
+        },
+        "/anime/all/sources": {
+            "get": {
+                "description": "Fetch anime sources by show ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anime"
+                ],
+                "summary": "Fetch anime sources",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "anime ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "translation Type",
+                        "name": "tt",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "episode Number",
+                        "name": "e",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/anime.AnimeSource"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/profiles/users": {
             "get": {
                 "description": "Retrieve a list of all users",
@@ -430,6 +511,135 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "anime.AnimeSearch": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "shows": {
+                            "type": "object",
+                            "properties": {
+                                "edges": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "__typename": {
+                                                "type": "string"
+                                            },
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "airedStart": {
+                                                "type": "object"
+                                            },
+                                            "availableEpisodes": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "dub": {
+                                                        "type": "integer"
+                                                    },
+                                                    "raw": {
+                                                        "type": "integer"
+                                                    },
+                                                    "sub": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            "englishName": {},
+                                            "episodeCount": {},
+                                            "episodeDuration": {},
+                                            "lastUpdateEnd": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "nativeName": {},
+                                            "thumbnail": {
+                                                "type": "string"
+                                            },
+                                            "type": {}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "anime.AnimeSource": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "episode": {
+                            "type": "object",
+                            "properties": {
+                                "episodeString": {
+                                    "type": "string"
+                                },
+                                "sourceUrls": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "className": {
+                                                "type": "string"
+                                            },
+                                            "downloads": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "downloadUrl": {
+                                                        "type": "string"
+                                                    },
+                                                    "sourceName": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "mobile": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "downloadUrl": {
+                                                        "type": "string"
+                                                    },
+                                                    "sourceName": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "priority": {
+                                                "type": "number"
+                                            },
+                                            "sandbox": {
+                                                "type": "string"
+                                            },
+                                            "sourceName": {
+                                                "type": "string"
+                                            },
+                                            "sourceUrl": {
+                                                "type": "string"
+                                            },
+                                            "streamerId": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "film.FilmSearch": {
             "description": "stores the film data",
             "type": "object",
@@ -811,8 +1021,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "Pipebomb API for searching and streaming movies",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {

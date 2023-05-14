@@ -11,6 +11,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gocolly/colly"
 	"pipebomb/profiles"
+	"pipebomb/anime"
 	"pipebomb/film"
 	"pipebomb/show"
 )
@@ -29,7 +30,8 @@ func FetchShowSources(w http.ResponseWriter, r *http.Request) {
 	sources, err := show.GetShowSources(serverID)
 	if err != nil {
 		http.Error(w, "Error fetching show sources", http.StatusInternalServerError)
-		return }
+		return 
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(sources)
@@ -52,7 +54,8 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	sources, err := film.GetFilmSources(serverID)
 	if err != nil {
 		http.Error(w, "Error fetching film sources", http.StatusInternalServerError)
-		return }
+		return 
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(sources)
@@ -168,6 +171,85 @@ func searchShows(query string) (interface{}, error) {
 
 	return results, nil
 }
+
+// @Summary Fetch anime sources
+// @Description Fetch anime sources by show ID
+// @Tags Anime
+// @Accept json
+// @Produce json
+// @Param id query string true "anime ID"
+// @Param tt query string true "translation Type"
+// @Param e query string true "episode Number"
+// @Success 200 {array} anime.AnimeSource
+// @Router /anime/all/sources [get]
+func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
+	showId := r.URL.Query().Get("id")
+	translationType := r.URL.Query().Get("tt")
+	episodeString := r.URL.Query().Get("e")
+
+	anime := anime.ProcessSources(showId, translationType, episodeString)
+
+	responseBytes, err := json.Marshal(anime)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("Error writing response for film search: ", s)
+		return
+	}
+}
+
+
+func searchAnime(query string) (interface{}, error) {
+	var results []*anime.AnimeSearch
+
+	anime := anime.ProcessQuery(query)
+	if anime != nil {
+		results = append(results, anime)
+	}
+
+	return results, nil
+}
+
+
+// @Summary Search for anime
+// @Description Search for anime by query
+// @Tags Anime
+// @Accept  json
+// @Produce  json
+// @Param   q query string true "Search Query"
+// @Success 200 {object} anime.AnimeSearch
+// @Router /anime/all/search [get]
+func AnimeSearch(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	
+	results, _ := searchAnime(query)
+
+	jsonResponse := map[string]interface{}{
+		"results": results,
+	}
+
+	responseBytes, err := json.Marshal(jsonResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("Error writing response for film search: ", s)
+		return
+	}
+}
+
+
 
 // @Summary Search for shows
 // @Description Search for shows by query
