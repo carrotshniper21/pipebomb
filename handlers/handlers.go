@@ -93,22 +93,25 @@ func FetchFilmServers(redisCache *cache.RedisCache) http.HandlerFunc {
 // @Param			id	query	string	true	"Server ID"
 // @Success		200	{array}	film.FilmSourcesEncrypted
 // @Router			/films/vip/sources [get]
-func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
-	serverId := r.URL.Query().Get("id")
+func FetchFilmSources(redisCache *cache.RedisCache) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		serverId := r.URL.Query().Get("id")
+		key := "film_sources_" + serverId
 
-	fetchFunc := func(id string) (interface{}, error) {
-		return film.GetFilmSources(id)
+		fetchFunc := func(serverId string) (interface{}, error) {
+			return film.GetFilmSources(serverId)
+		}
+
+		data, err := cache.CacheData(redisCache, key, fetchFunc, serverId)
+		if err != nil {
+			util.HandleError(w, err, "Error fetching (film) sources", http.StatusInternalServerError)
+			return
+		}
+
+		sources := data.(*film.FilmSourcesDecrypted)
+
+		util.WriteJSONResponse(w, sources)
 	}
-
-	// create redisCache
-	sources, err := cache.CacheData(redisCache, serverId, fetchFunc, serverId)
-
-	if err != nil {
-		util.HandleError(w, err, "Error fetching (film) sources", http.StatusInternalServerError)
-		return
-	}
-
-	util.WriteJSONResponse(w, sources)
 }
 
 // ######## Anime ########
