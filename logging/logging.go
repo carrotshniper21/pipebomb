@@ -3,6 +3,7 @@ package logging
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -36,7 +37,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 				color.Cyan("Request body: None\n")
 			}
 			// Replace the request body with a new reader, so it can be read again by the handlers
-			r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+			r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 		}
 
 		// Record the status code and body using a custom response writer
