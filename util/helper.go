@@ -2,7 +2,6 @@ package util
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -25,11 +24,5 @@ func WriteJSONResponse(w http.ResponseWriter, data interface{}) {
 	_, err = w.Write(responseBytes)
 	if err != nil {
 		HandleError(w, err, "Error writing response: ", http.StatusInternalServerError)
-	}
-}
-
-func LoggingError(context string, err error) {
-	if err != nil {
-		fmt.Println("Error in", context, err)
 	}
 }

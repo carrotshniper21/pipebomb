@@ -3,7 +3,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"pipebomb/util"
 
@@ -77,10 +76,7 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 
 	util.HandleError(w, err, "Error fetching (film) sources", http.StatusInternalServerError)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(sources)
-	util.LoggingError("(film) sources", err)
+	util.WriteJSONResponse(w, sources)
 }
 
 // ######## Anime ########
@@ -122,7 +118,6 @@ func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
 	animeId := r.URL.Query().Get("id")
 	translationType := r.URL.Query().Get("tt")
 	episodeString := r.URL.Query().Get("e")
-
 	anime, err := anime.ProcessSources(animeId, translationType, episodeString)
 
 	util.HandleError(w, err, "Error fetching (anime) sources", http.StatusInternalServerError)
@@ -185,33 +180,13 @@ func FetchShowServers(w http.ResponseWriter, r *http.Request) {
 	episodeId := r.URL.Query().Get("id")
 	servers, err := show.GetShowServer(episodeId)
 
-	if err != nil {
-		http.Error(w, "Error fetching (show) servers", http.StatusInternalServerError)
-		return
-	}
+	util.HandleError(w, err, "Error fetching (show) servers", http.StatusInternalServerError)
 
 	jsonResponse := map[string]interface{}{
 		"servers": servers,
 	}
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	responseBytes, err := json.Marshal(jsonResponse)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, s := w.Write(responseBytes)
-	if s != nil {
-		fmt.Println("Error writing response for (show) servers: ", s)
-		return
-	}
+	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // FetchShowSources
@@ -227,16 +202,9 @@ func FetchShowSources(w http.ResponseWriter, r *http.Request) {
 	serverId := r.URL.Query().Get("id")
 	sources, err := show.GetShowSources(serverId)
 
-	if err != nil {
-		http.Error(w, "Error fetching (show) sources", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(sources)
-	if err != nil {
-		fmt.Println("Error writing response for (show) sources: ", err)
-	}
+	util.HandleError(w, err, "Error fetching (show) sources", http.StatusInternalServerError)
+
+	util.WriteJSONResponse(w, sources)
 }
 
 // ######## Novels ########
