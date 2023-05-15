@@ -3,10 +3,11 @@ package logging
 
 import (
 	"bytes"
-	"github.com/fatih/color"
-	"github.com/tidwall/pretty"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/fatih/color"
+	"github.com/tidwall/pretty"
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {

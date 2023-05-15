@@ -1,3 +1,4 @@
+// pipebomb/novel/models.go
 package novel
 
 type NovelSearch struct {
