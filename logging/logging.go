@@ -43,8 +43,14 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 		// Log the response body with pretty-printed JSON
 		prettyBody := pretty.Color(pretty.Pretty(recorder.body.Bytes()), pretty.TerminalStyle)
-		if string(prettyBody) != "" {
-			color.Cyan("Response body: \n%s", string(prettyBody))
+		if len(prettyBody) > 0 {
+			// Truncate the response body if it's too long
+			const maxBodyLength = 1000
+			prettyBodyStr := string(prettyBody)
+			if len(prettyBodyStr) > maxBodyLength {
+				prettyBodyStr = prettyBodyStr[:maxBodyLength] + "..."
+			}
+			color.Cyan("Response body: \n%s", prettyBodyStr)
 		} else {
 			color.Cyan("Response body: None\n")
 		}
