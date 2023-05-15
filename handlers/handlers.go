@@ -300,18 +300,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // @Success		200			{object}	profiles.User
 // @Failure		404			"User not found"
 // @Router			/api/profiles/users/{username} [put]
-// UpdateUser
-// @Summary		Update a user
-// @Description	Update a user's data by their username
-// @ID				update-user
-// @Tags			Users
-// @Accept			json
-// @Produce		json
-// @Param			username	path		string			true	"Username of the user to be updated"
-// @Param			updatedUser	body		profiles.User	true	"Updated user data"
-// @Success		200			{object}	profiles.User
-// @Failure		404			"User not found"
-// @Router			/api/profiles/users/{username} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	color.Magenta("PUT request received to update a user")
 	params := mux.Vars(r)
