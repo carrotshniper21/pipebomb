@@ -354,7 +354,6 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 // Home where the user goes when they need to poo-poo pee-pee
 func Home(w http.ResponseWriter, r *http.Request) {
-	color.Blue("GET request received for home page")
-	response := map[string]string{"message": "Welcome to the Profiles API!"}
+	response := map[string]string{"message": "Welcome to the Pipebomb API!"}
 	util.WriteJSONResponse(w, response)
 }
