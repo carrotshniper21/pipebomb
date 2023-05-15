@@ -405,12 +405,16 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 // ######## Home ########
 
-// Home just a place for the user to go when they need to go poo-poo pee-pee
+// Home
+// @Summary		Home page
+// @Description	Displays a welcome message
+// @ID				home
+// @Tags			Home
+// @Produce		json
+// @Success		200		{object}	map[string]string
+// @Router			/ [get]
 func Home(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	_, err := fmt.Fprintf(w, "<html><body><h1>Welcome to the home page. Nyaa~~</h1></body></html>")
-	if err != nil {
-		fmt.Println("error writing home page: ", err)
-		return
-	}
+	color.Blue("GET request received for home page")
+	response := map[string]string{"message": "Welcome to the Profiles API!"}
+	util.WriteJSONResponse(w, response)
 }
