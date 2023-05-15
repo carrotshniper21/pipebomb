@@ -280,15 +280,26 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	color.Yellow("GET request received for a specific user")
 	params := mux.Vars(r)
 	username := params["username"]
-	for _, user := range profiles.Users {
-		if user.Username == username {
-			util.WriteJSONResponse(w, user)
-			return
-		}
+	user, err := profiles.FindUserByUsername(username)
+	if err != nil {
+		http.NotFound(w, r)
+		return
 	}
-	http.NotFound(w, r)
+	util.WriteJSONResponse(w, user)
 }
 
+// UpdateUser
+// @Summary		Update a user
+// @Description	Update a user's data by their username
+// @ID				update-user
+// @Tags			Users
+// @Accept			json
+// @Produce		json
+// @Param			username	path		string			true	"Username of the user to be updated"
+// @Param			updatedUser	body		profiles.User	true	"Updated user data"
+// @Success		200			{object}	profiles.User
+// @Failure		404			"User not found"
+// @Router			/api/profiles/users/{username} [put]
 // UpdateUser
 // @Summary		Update a user
 // @Description	Update a user's data by their username
@@ -305,41 +316,26 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	color.Magenta("PUT request received to update a user")
 	params := mux.Vars(r)
 	username := params["username"]
-	for i, user := range profiles.Users {
-		if user.Username == username {
-			var updatedUser profiles.User
-			err := json.NewDecoder(r.Body).Decode(&updatedUser)
-			util.HandleError(w, err, err.Error(), http.StatusBadRequest)
 
-			// Merge the updated fields with the existing user data
-			if updatedUser.Username != "" {
-				user.Username = updatedUser.Username
-			}
-			if updatedUser.Avatar != "" {
-				user.Avatar = updatedUser.Avatar
-			}
-			profile := &user.Profile
-			updatedProfile := &updatedUser.Profile
-			if updatedProfile.Name != "" {
-				profile.Name = updatedProfile.Name
-			}
-			if updatedProfile.Image != "" {
-				profile.Image = updatedProfile.Image
-			}
-			if updatedProfile.Bio != "" {
-				profile.Bio = updatedProfile.Bio
-			}
-			if updatedProfile.Philosophy != "" {
-				profile.Philosophy = updatedProfile.Philosophy
-			}
+	// Decode the updated user data from the request body
+	var updatedUser profiles.User
+	err := json.NewDecoder(r.Body).Decode(&updatedUser)
+	util.HandleError(w, err, err.Error(), http.StatusBadRequest)
 
-			profiles.Users[i] = user
-			profiles.SaveUsers()
-			util.WriteJSONResponse(w, user)
-			return
-		}
+	// Find the existing user
+	user, err := profiles.FindUserByUsername(username)
+	if err != nil {
+		http.NotFound(w, r)
+		return
 	}
-	http.NotFound(w, r)
+
+	// Merge the updated fields with the existing user data
+	profiles.MergeUpdated(user, updatedUser)
+
+	// Save the updated users list
+	profiles.SaveUsers()
+
+	util.WriteJSONResponse(w, user)
 }
 
 // DeleteUser
@@ -352,23 +348,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Success		200			{object}	profiles.User
 // @Failure		404			"User not found"
 // @Router			/api/profiles/users/{username} [delete]
+// DeleteUser deletes a user by their username and returns the deleted user
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	color.Red("DELETE request received to delete a user")
 	params := mux.Vars(r)
 	username := params["username"]
 
-	if username != "Space Mommy" {
-		for i, user := range profiles.Users {
-			if user.Username == username {
-				profiles.Users = append(profiles.Users[:i], profiles.Users[i+1:]...)
-				profiles.SaveUsers()
-				util.WriteJSONResponse(w, user)
-				return
-			}
-		}
+	user, err := profiles.DeleteUser(username)
+	if err != nil {
+		http.NotFound(w, r)
+		return
 	}
-
-	http.NotFound(w, r)
+	util.WriteJSONResponse(w, user)
 }
 
 // ######## Home ########

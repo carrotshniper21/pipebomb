@@ -3,6 +3,7 @@ package profiles
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/fatih/color"
 	"net/http"
@@ -79,4 +80,69 @@ func SaveUsers() {
 		return
 	}
 	color.Green("Users saved successfully")
+}
+
+// FindUserByUsername finds a user by their username in the users list
+func FindUserByUsername(username string) (*User, error) {
+	for _, user := range Users {
+		if user.Username == username {
+			return &user, nil
+		}
+	}
+	return nil, fmt.Errorf("user not found")
+}
+
+// AddUser adds a new user to the users list
+func AddUser(user User) {
+	Users = append(Users, user)
+	SaveUsers()
+}
+
+// UpdateUser updates a user's data in the users list
+func UpdateUser(updatedUser User) error {
+	for i, user := range Users {
+		if user.Username == updatedUser.Username {
+			Users[i] = updatedUser
+			SaveUsers()
+			return nil
+		}
+	}
+	return fmt.Errorf("user not found")
+}
+
+// DeleteUser deletes a user from the users list
+func DeleteUser(username string) (User, error) {
+	if username != "Space Mommy" {
+		for i, user := range Users {
+			if user.Username == username {
+				Users = append(Users[:i], Users[i+1:]...)
+				SaveUsers()
+				return user, nil
+			}
+		}
+	}
+	return User{}, errors.New("user not found")
+}
+
+func MergeUpdated(user *User, updatedUser User) {
+	if updatedUser.Username != "" {
+		user.Username = updatedUser.Username
+	}
+	if updatedUser.Avatar != "" {
+		user.Avatar = updatedUser.Avatar
+	}
+	profile := &user.Profile
+	updatedProfile := &updatedUser.Profile
+	if updatedProfile.Name != "" {
+		profile.Name = updatedProfile.Name
+	}
+	if updatedProfile.Image != "" {
+		profile.Image = updatedProfile.Image
+	}
+	if updatedProfile.Bio != "" {
+		profile.Bio = updatedProfile.Bio
+	}
+	if updatedProfile.Philosophy != "" {
+		profile.Philosophy = updatedProfile.Philosophy
+	}
 }
