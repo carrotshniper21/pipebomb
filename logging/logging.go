@@ -25,31 +25,45 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 			// Log the request body with pretty-printed JSON
 			prettyBody := pretty.Color(pretty.Pretty(bodyBytes), pretty.TerminalStyle)
-      if string(prettyBody) != "" {
-        color.Cyan("Request body: \n%s", string(prettyBody))
-      } else {
-			  color.Cyan("Request body: None\n")
-      }
+			if string(prettyBody) != "" {
+				color.Cyan("Request body: \n%s", string(prettyBody))
+			} else {
+				color.Cyan("Request body: None\n")
+			}
 			// Replace the request body with a new reader, so it can be read again by the handlers
 			r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		}
 
-		// Record the status code using a custom response writer
+		// Record the status code and body using a custom response writer
 		recorder := &statusRecorder{ResponseWriter: w, statusCode: http.StatusOK}
 		next.ServeHTTP(recorder, r)
 
 		// Log the response status code
 		color.Magenta("Response status: %d", recorder.statusCode)
-    color.Black("-------------------")
+
+		// Log the response body with pretty-printed JSON
+		prettyBody := pretty.Color(pretty.Pretty(recorder.body.Bytes()), pretty.TerminalStyle)
+		if string(prettyBody) != "" {
+			color.Cyan("Response body: \n%s", string(prettyBody))
+		} else {
+			color.Cyan("Response body: None\n")
+		}
+		color.Black("-------------------")
 	})
 }
 
 type statusRecorder struct {
 	http.ResponseWriter
 	statusCode int
+	body       bytes.Buffer
 }
 
 func (r *statusRecorder) WriteHeader(statusCode int) {
 	r.statusCode = statusCode
 	r.ResponseWriter.WriteHeader(statusCode)
+}
+
+func (r *statusRecorder) Write(body []byte) (int, error) {
+	r.body.Write(body)
+	return r.ResponseWriter.Write(body)
 }
