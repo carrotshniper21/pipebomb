@@ -5,14 +5,13 @@ import (
 	handies "github.com/gorilla/handlers"
 	"log"
 	"net/http"
+	"pipebomb/cache"
 	_ "pipebomb/docs"
 
 	"github.com/gorilla/mux"
 )
 
-// Server sets up the server
 func Server(r *mux.Router, port string) {
-	// setup cors for router
 	cors := handies.CORS(
 		handies.AllowedOrigins([]string{"*"}),
 		handies.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
@@ -21,7 +20,7 @@ func Server(r *mux.Router, port string) {
 	log.Fatal(http.ListenAndServe(":"+port, cors(r)))
 }
 
-func StartServer(port string) {
-	r := InitRouter()
+func StartServer(port string, redisCache *cache.RedisCache) {
+	r := InitRouter(redisCache)
 	Server(r, port)
 }

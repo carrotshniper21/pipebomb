@@ -2,9 +2,10 @@
 package main
 
 import (
+	"fmt"
+	"pipebomb/cache"
 	"pipebomb/server"
 )
-
 
 //	@title			Pipebomb API
 //	@version		6.9
@@ -19,7 +20,16 @@ import (
 //	@BaseURL		127.0.0.1:8001
 //	@BasePath		/api
 //	@schemes		https http
+//
+// pipebomb/main.go
 func main() {
 	port := "8001"
-	server.StartServer(port)
+	redisCache := cache.NewCache("localhost:6379", "", 0) // replace with your Redis server details
+	defer func(redisCache *cache.RedisCache) {
+		err := redisCache.Close()
+		if err != nil {
+			fmt.Println("failed to close redis cache connection")
+		}
+	}(redisCache)
+	server.StartServer(port, redisCache)
 }

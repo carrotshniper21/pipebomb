@@ -2,35 +2,35 @@
 package server
 
 import (
-	"pipebomb/handlers"
-	"pipebomb/logging"
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"pipebomb/cache"
+	"pipebomb/handlers"
+	"pipebomb/logging"
 )
 
-// InitRouter initializes the router
-func InitRouter() *mux.Router {
+func InitRouter(redisCache *cache.RedisCache) *mux.Router {
 	color.Blue("Starting server on port http://127.0.0.1:8001")
 	r := mux.NewRouter()
 	r.Use(logging.LoggingMiddleware)
 	r.HandleFunc("/", handlers.Home)
 	r.PathPrefix("/docs").Handler(httpSwagger.WrapHandler)
-	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch)
-	r.HandleFunc("/api/films/vip/servers", handlers.FetchFilmServers)
-	r.HandleFunc("/api/films/vip/sources", handlers.FetchFilmSources)
-	r.HandleFunc("/api/series/vip/search", handlers.ShowSearch)
-	r.HandleFunc("/api/series/vip/seasons", handlers.ShowSeason)
-	r.HandleFunc("/api/series/vip/servers", handlers.FetchShowServers)
-	r.HandleFunc("/api/series/vip/sources", handlers.FetchShowSources)
-	r.HandleFunc("/api/anime/all/search", handlers.AnimeSearch)
-	r.HandleFunc("/api/anime/all/sources", handlers.FetchAnimeSources)
-	r.HandleFunc("/api/novels/rln/search", handlers.NovelSearch)
-  r.HandleFunc("/api/profiles/users", handlers.GetUsers).Methods("GET")
-  r.HandleFunc("/api/profiles/users", handlers.CreateUser).Methods("POST")
-  r.HandleFunc("/api/profiles/users/{username}", handlers.GetUser).Methods("GET")
-  r.HandleFunc("/api/profiles/users/{username}", handlers.UpdateUser).Methods("PUT")
-  r.HandleFunc("/api/profiles/users/{username}", handlers.DeleteUser).Methods("DELETE")
+	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch(redisCache)).Methods("GET") // pass the cache to your handlers
+	r.HandleFunc("/api/films/vip/servers", handlers.FetchFilmServers(redisCache)).Methods("GET")
+	r.HandleFunc("/api/films/vip/sources", handlers.FetchFilmSources(redisCache)).Methods("GET")
+	r.HandleFunc("/api/series/vip/search", handlers.ShowSearch(redisCache)).Methods("GET")
+	r.HandleFunc("/api/series/vip/seasons", handlers.ShowSeason(redisCache)).Methods("GET")
+	r.HandleFunc("/api/series/vip/servers", handlers.FetchShowServers(redisCache)).Methods("GET")
+	r.HandleFunc("/api/series/vip/sources", handlers.FetchShowSources(redisCache)).Methods("GET")
+	r.HandleFunc("/api/anime/all/search", handlers.AnimeSearch(redisCache)).Methods("GET")
+	r.HandleFunc("/api/anime/all/sources", handlers.FetchAnimeSources(redisCache)).Methods("GET")
+	r.HandleFunc("/api/novels/rln/search", handlers.NovelSearch(redisCache)).Methods("GET")
+	r.HandleFunc("/api/profiles/users", handlers.GetUsers).Methods("GET")
+	r.HandleFunc("/api/profiles/users", handlers.CreateUser).Methods("POST")
+	r.HandleFunc("/api/profiles/users/{username}", handlers.GetUser).Methods("GET")
+	r.HandleFunc("/api/profiles/users/{username}", handlers.UpdateUser).Methods("PUT")
+	r.HandleFunc("/api/profiles/users/{username}", handlers.DeleteUser).Methods("DELETE")
 
 	return r
 }

@@ -3,17 +3,20 @@ package handlers
 
 import (
 	"encoding/json"
-	"net/http"
-	"pipebomb/util"
-
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
+	"net/http"
 	"pipebomb/anime"
-	"pipebomb/film"
+	"pipebomb/cache"
 	"pipebomb/novel"
 	"pipebomb/profiles"
 	"pipebomb/show"
+	"pipebomb/util"
+
+	"pipebomb/film"
 )
+
+var redisCache = cache.NewRedisCache("localhost:6379", "", 0)
 
 // ######## Films ########
 
@@ -26,17 +29,25 @@ import (
 // @Param			q	query		string	true	"Search Query"
 // @Success		200	{object}	film.FilmSearch
 // @Router			/films/vip/search [get]
-func FilmSearch(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("q")
-	results, err := film.ProcessQuery(query)
+func FilmSearch(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		key := "film_search_" + query
 
-	util.HandleError(w, err, "Error handling (film) query", http.StatusInternalServerError)
+		data, err := cache.CacheData(redisCache, key, film.ProcessQuery, query)
+		if err != nil {
+			util.HandleError(w, err, "Error handling (film) query", http.StatusInternalServerError)
+			return
+		}
 
-	jsonResponse := map[string]interface{}{
-		"results": results,
+		results := data.([]film.FilmSearch)
+
+		jsonResponse := map[string]interface{}{
+			"results": results,
+		}
+
+		util.WriteJSONResponse(w, jsonResponse)
 	}
-
-	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // FetchFilmServers
@@ -48,17 +59,29 @@ func FilmSearch(w http.ResponseWriter, r *http.Request) {
 // @Param			id	query	string	true	"Film ID"
 // @Success		200	{array}	film.FilmServer
 // @Router			/films/vip/servers [get]
-func FetchFilmServers(w http.ResponseWriter, r *http.Request) {
-	filmID := r.URL.Query().Get("id")
-	servers, err := film.GetFilmServer(filmID)
+func FetchFilmServers(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		filmID := r.URL.Query().Get("id")
+		key := "film_servers_" + filmID
 
-	util.HandleError(w, err, "Error fetching (film) servers", http.StatusInternalServerError)
+		fetchFunc := func(filmID string) (interface{}, error) {
+			return film.GetFilmServer(filmID)
+		}
 
-	jsonResponse := map[string]interface{}{
-		"servers": servers,
+		data, err := cache.CacheData(redisCache, key, fetchFunc, filmID)
+		if err != nil {
+			util.HandleError(w, err, "Error fetching (film) servers", http.StatusInternalServerError)
+			return
+		}
+
+		servers := data.([]film.FilmServer)
+
+		jsonResponse := map[string]interface{}{
+			"servers": servers,
+		}
+
+		util.WriteJSONResponse(w, jsonResponse)
 	}
-
-	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // FetchFilmSources
@@ -72,9 +95,18 @@ func FetchFilmServers(w http.ResponseWriter, r *http.Request) {
 // @Router			/films/vip/sources [get]
 func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	serverId := r.URL.Query().Get("id")
-	sources, err := film.GetFilmSources(serverId)
 
-	util.HandleError(w, err, "Error fetching (film) sources", http.StatusInternalServerError)
+	fetchFunc := func(id string) (interface{}, error) {
+		return film.GetFilmSources(id)
+	}
+
+	// create redisCache
+	sources, err := cache.CacheData(redisCache, serverId, fetchFunc, serverId)
+
+	if err != nil {
+		util.HandleError(w, err, "Error fetching (film) sources", http.StatusInternalServerError)
+		return
+	}
 
 	util.WriteJSONResponse(w, sources)
 }
@@ -90,17 +122,25 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 // @Param			q	query		string	true	"Search Query"
 // @Success		200	{object}	anime.AnimeSearch
 // @Router			/anime/all/search [get]
-func AnimeSearch(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("q")
-	results, err := anime.ProcessQuery(query)
+func AnimeSearch(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		key := "anime_search_" + query
 
-	util.HandleError(w, err, "Error handling (anime) query", http.StatusInternalServerError)
+		data, err := cache.CacheData(redisCache, key, anime.ProcessQuery, query)
+		if err != nil {
+			util.HandleError(w, err, "Error handling (anime) query", http.StatusInternalServerError)
+			return
+		}
 
-	jsonResponse := map[string]interface{}{
-		"results": results,
+		results := data.([]anime.AnimeSearch)
+
+		jsonResponse := map[string]interface{}{
+			"results": results,
+		}
+
+		util.WriteJSONResponse(w, jsonResponse)
 	}
-
-	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // FetchAnimeSources
@@ -114,15 +154,27 @@ func AnimeSearch(w http.ResponseWriter, r *http.Request) {
 // @Param			e	query	string	true	"episode Number"
 // @Success		200	{array}	anime.AnimeSource
 // @Router			/anime/all/sources [get]
-func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
-	animeId := r.URL.Query().Get("id")
-	translationType := r.URL.Query().Get("tt")
-	episodeString := r.URL.Query().Get("e")
-	anime, err := anime.ProcessSources(animeId, translationType, episodeString)
+func FetchAnimeSources(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		animeId := r.URL.Query().Get("id")
+		translationType := r.URL.Query().Get("tt")
+		episodeString := r.URL.Query().Get("e")
+		key := "anime_sources_" + animeId + "_" + translationType + "_" + episodeString
 
-	util.HandleError(w, err, "Error fetching (anime) sources", http.StatusInternalServerError)
+		fetchFunc := func(_ string) (interface{}, error) {
+			return anime.ProcessSources(animeId, translationType, episodeString)
+		}
 
-	util.WriteJSONResponse(w, anime)
+		data, err := cache.CacheData(redisCache, key, fetchFunc, "")
+		if err != nil {
+			util.HandleError(w, err, "Error fetching (anime) sources", http.StatusInternalServerError)
+			return
+		}
+
+		anime := data.([]anime.AnimeSource)
+
+		util.WriteJSONResponse(w, anime)
+	}
 }
 
 // ######## Shows ########
@@ -136,17 +188,25 @@ func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
 // @Param			q	query		string	true	"Search Query"
 // @Success		200	{object}	show.ShowSearch
 // @Router			/series/vip/search [get]
-func ShowSearch(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("q")
-	results, err := show.ProcessQuery(query)
+func ShowSearch(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		key := "show_search_" + query
 
-	util.HandleError(w, err, "Error handling (show) query", http.StatusInternalServerError)
+		data, err := cache.CacheData(redisCache, key, show.ProcessQuery, query)
+		if err != nil {
+			util.HandleError(w, err, "Error handling (show) query", http.StatusInternalServerError)
+			return
+		}
 
-	jsonResponse := map[string]interface{}{
-		"results": results,
+		results := data.([]show.ShowSearch)
+
+		jsonResponse := map[string]interface{}{
+			"results": results,
+		}
+
+		util.WriteJSONResponse(w, jsonResponse)
 	}
-
-	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // ShowSeason
@@ -158,13 +218,25 @@ func ShowSearch(w http.ResponseWriter, r *http.Request) {
 // @Param			id	query	string	true	"Show ID"
 // @Success		200	{array}	show.ShowSeason
 // @Router			/series/vip/seasons [get]
-func ShowSeason(w http.ResponseWriter, r *http.Request) {
-	showId := r.URL.Query().Get("id")
-	results, err := show.GetShowSeasons(showId)
+func ShowSeason(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		showId := r.URL.Query().Get("id")
+		key := "show_seasons_" + showId
 
-	util.HandleError(w, err, "Error fetching (show) seasons & episodes", http.StatusInternalServerError)
+		fetchFunc := func(id string) (interface{}, error) {
+			return show.GetShowSeasons(id)
+		}
 
-	util.WriteJSONResponse(w, results)
+		data, err := cache.CacheData(redisCache, key, fetchFunc, showId)
+		if err != nil {
+			util.HandleError(w, err, "Error fetching (show) seasons & episodes", http.StatusInternalServerError)
+			return
+		}
+
+		results := data.(map[string]show.ShowSeason)
+
+		util.WriteJSONResponse(w, results)
+	}
 }
 
 // FetchShowServers
@@ -176,17 +248,29 @@ func ShowSeason(w http.ResponseWriter, r *http.Request) {
 // @Param			id	query	string	true	"Episode ID"
 // @Success		200	{array}	show.ShowServer
 // @Router			/series/vip/servers [get]
-func FetchShowServers(w http.ResponseWriter, r *http.Request) {
-	episodeId := r.URL.Query().Get("id")
-	servers, err := show.GetShowServer(episodeId)
+func FetchShowServers(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		episodeId := r.URL.Query().Get("id")
+		key := "show_servers_" + episodeId
 
-	util.HandleError(w, err, "Error fetching (show) servers", http.StatusInternalServerError)
+		fetchFunc := func(id string) (interface{}, error) {
+			return show.GetShowServer(id)
+		}
 
-	jsonResponse := map[string]interface{}{
-		"servers": servers,
+		data, err := cache.CacheData(redisCache, key, fetchFunc, episodeId)
+		if err != nil {
+			util.HandleError(w, err, "Error fetching (show) servers", http.StatusInternalServerError)
+			return
+		}
+
+		servers := data.([]show.ShowServer)
+
+		jsonResponse := map[string]interface{}{
+			"servers": servers,
+		}
+
+		util.WriteJSONResponse(w, jsonResponse)
 	}
-
-	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // FetchShowSources
@@ -198,13 +282,25 @@ func FetchShowServers(w http.ResponseWriter, r *http.Request) {
 // @Param			id	query	string	true	"Server ID"
 // @Success		200	{array}	show.ShowSourcesEncrypted
 // @Router			/series/vip/sources [get]
-func FetchShowSources(w http.ResponseWriter, r *http.Request) {
-	serverId := r.URL.Query().Get("id")
-	sources, err := show.GetShowSources(serverId)
+func FetchShowSources(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		serverId := r.URL.Query().Get("id")
+		key := "show_sources_" + serverId
 
-	util.HandleError(w, err, "Error fetching (show) sources", http.StatusInternalServerError)
+		fetchFunc := func(id string) (interface{}, error) {
+			return show.GetShowSources(id)
+		}
 
-	util.WriteJSONResponse(w, sources)
+		data, err := cache.CacheData(redisCache, key, fetchFunc, serverId)
+		if err != nil {
+			util.HandleError(w, err, "Error fetching (show) sources", http.StatusInternalServerError)
+			return
+		}
+
+		sources := data.(*show.ShowSourcesDecrypted)
+
+		util.WriteJSONResponse(w, sources)
+	}
 }
 
 // ######## Novels ########
@@ -218,17 +314,29 @@ func FetchShowSources(w http.ResponseWriter, r *http.Request) {
 // @Param			q	query		string	true	"Search Query"
 // @Success		200	{object}	novel.NovelSearch
 // @Router			/novels/rln/search [get]
-func NovelSearch(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("q")
-	results, err := novel.ProcessQuery(query)
+func NovelSearch(redisCache *cache.RedisCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		key := "novel_search_" + query
 
-	util.HandleError(w, err, "Error handling (novel) query", http.StatusInternalServerError)
+		fetchFunc := func(query string) (interface{}, error) {
+			return novel.ProcessQuery(query)
+		}
 
-	jsonResponse := map[string]interface{}{
-		"results": results,
+		data, err := cache.CacheData(redisCache, key, fetchFunc, query)
+		if err != nil {
+			util.HandleError(w, err, "Error handling (novel) query", http.StatusInternalServerError)
+			return
+		}
+
+		results := data.([]*novel.NovelSearch)
+
+		jsonResponse := map[string]interface{}{
+			"results": results,
+		}
+
+		util.WriteJSONResponse(w, jsonResponse)
 	}
-
-	util.WriteJSONResponse(w, jsonResponse)
 }
 
 // ######## Users ########
