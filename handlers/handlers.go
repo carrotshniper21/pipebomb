@@ -16,8 +16,6 @@ import (
 	"pipebomb/film"
 )
 
-var redisCache = cache.NewRedisCache("localhost:6379", "", 0)
-
 // ######## Films ########
 
 // FilmSearch
