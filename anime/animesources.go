@@ -50,11 +50,13 @@ func animeSources(showId, translationType, episodeString string) (*AnimeSource, 
 	return &anime, nil
 }
 
-func ProcessSources(showId, translationType, episodeString string) *AnimeSource {
+func ProcessSources(showId, translationType, episodeString string) (interface{}, error) {
+	var results []*AnimeSource
+
 	anime, err := animeSources(showId, translationType, episodeString)
 	if err != nil {
-		return nil
+		results = append(results, anime)
 	}
 
-	return anime
+	return results, nil
 }

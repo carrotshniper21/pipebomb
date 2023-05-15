@@ -19,8 +19,8 @@
         },
         "version": "6.9"
     },
-    "host": "anij.bytecats.codes",
-    "basePath": "/pipebomb/api",
+    "host": "127.0.0.1:8001",
+    "basePath": "/api",
     "paths": {
         "/anime/all/search": {
             "get": {
@@ -369,6 +369,38 @@
                 }
             }
         },
+        "/novels/rln/search": {
+            "get": {
+                "description": "Search for novels by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Novels"
+                ],
+                "summary": "Search for novels",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/novel.NovelSearch"
+                        }
+                    }
+                }
+            }
+        },
         "/series/vip/search": {
             "get": {
                 "description": "Search for shows by query",
@@ -531,6 +563,12 @@
                                             "airedStart": {
                                                 "type": "object"
                                             },
+                                            "alternateThumbnails": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
                                             "availableEpisodes": {
                                                 "type": "object",
                                                 "properties": {
@@ -545,9 +583,21 @@
                                                     }
                                                 }
                                             },
+                                            "country": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
                                             "englishName": {},
                                             "episodeCount": {},
                                             "episodeDuration": {},
+                                            "genres": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
                                             "lastUpdateEnd": {
                                                 "type": "string"
                                             },
@@ -555,6 +605,24 @@
                                                 "type": "string"
                                             },
                                             "nativeName": {},
+                                            "rating": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "studios": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "tags": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
                                             "thumbnail": {
                                                 "type": "string"
                                             },
@@ -769,6 +837,35 @@
                     "type": "string"
                 },
                 "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "novel.NovelSearch": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "genres": {
+                    "type": "string"
+                },
+                "href": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "views": {
                     "type": "string"
                 }
             }

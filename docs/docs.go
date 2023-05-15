@@ -372,6 +372,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/novels/rln/search": {
+            "get": {
+                "description": "Search for novels by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Novels"
+                ],
+                "summary": "Search for novels",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/novel.NovelSearch"
+                        }
+                    }
+                }
+            }
+        },
         "/series/vip/search": {
             "get": {
                 "description": "Search for shows by query",
@@ -534,6 +566,12 @@ const docTemplate = `{
                                             "airedStart": {
                                                 "type": "object"
                                             },
+                                            "alternateThumbnails": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
                                             "availableEpisodes": {
                                                 "type": "object",
                                                 "properties": {
@@ -548,9 +586,21 @@ const docTemplate = `{
                                                     }
                                                 }
                                             },
+                                            "country": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
                                             "englishName": {},
                                             "episodeCount": {},
                                             "episodeDuration": {},
+                                            "genres": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
                                             "lastUpdateEnd": {
                                                 "type": "string"
                                             },
@@ -558,6 +608,24 @@ const docTemplate = `{
                                                 "type": "string"
                                             },
                                             "nativeName": {},
+                                            "rating": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "studios": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "tags": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
                                             "thumbnail": {
                                                 "type": "string"
                                             },
@@ -772,6 +840,35 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "novel.NovelSearch": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "genres": {
+                    "type": "string"
+                },
+                "href": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "views": {
                     "type": "string"
                 }
             }
@@ -1014,8 +1111,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "6.9",
-	Host:             "anij.bytecats.codes",
-	BasePath:         "/pipebomb/api",
+	Host:             "127.0.0.1:8001",
+	BasePath:         "/api",
 	Schemes:          []string{"https", "http"},
 	Title:            "Pipebomb API",
 	Description:      "Pipebomb API for searching and streaming movies",

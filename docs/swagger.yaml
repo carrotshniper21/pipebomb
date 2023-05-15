@@ -1,4 +1,4 @@
-basePath: /pipebomb/api
+basePath: /api
 definitions:
   anime.AnimeSearch:
     properties:
@@ -15,6 +15,10 @@ definitions:
                       type: string
                     airedStart:
                       type: object
+                    alternateThumbnails:
+                      items:
+                        type: string
+                      type: array
                     availableEpisodes:
                       properties:
                         dub:
@@ -24,14 +28,34 @@ definitions:
                         sub:
                           type: integer
                       type: object
+                    country:
+                      type: string
+                    description:
+                      type: string
                     englishName: {}
                     episodeCount: {}
                     episodeDuration: {}
+                    genres:
+                      items:
+                        type: string
+                      type: array
                     lastUpdateEnd:
                       type: string
                     name:
                       type: string
                     nativeName: {}
+                    rating:
+                      type: string
+                    status:
+                      type: string
+                    studios:
+                      items:
+                        type: string
+                      type: array
+                    tags:
+                      items:
+                        type: string
+                      type: array
                     thumbnail:
                       type: string
                     type: {}
@@ -175,6 +199,25 @@ definitions:
       kind:
         type: string
       label:
+        type: string
+    type: object
+  novel.NovelSearch:
+    properties:
+      author:
+        type: string
+      description:
+        type: string
+      genres:
+        type: string
+      href:
+        type: string
+      image:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      views:
         type: string
     type: object
   profiles.Achievement:
@@ -332,7 +375,7 @@ definitions:
       label:
         type: string
     type: object
-host: anij.bytecats.codes
+host: 127.0.0.1:8001
 info:
   contact:
     email: support@swagger.io
@@ -577,6 +620,27 @@ paths:
       summary: Fetch film sources
       tags:
       - Films
+  /novels/rln/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for novels by query
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/novel.NovelSearch'
+      summary: Search for novels
+      tags:
+      - Novels
   /series/vip/search:
     get:
       consumes:

@@ -10,11 +10,12 @@ import (
 	"github.com/fatih/color"
 	"pipebomb/profiles"
 	"pipebomb/anime"
+	"pipebomb/novel"
 	"pipebomb/film"
 	"pipebomb/show"
 )
 
-// Films
+// ######## Films ########
 
 //	@Summary		Search for films
 //	@Description	Search for films by query
@@ -26,7 +27,12 @@ import (
 //	@Router			/films/vip/search [get]
 func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-	results, _ := film.ProcessQuery(query)
+	results, err := film.ProcessQuery(query)
+
+	if err != nil {
+		http.Error(w, "Error handling (film) query", http.StatusInternalServerError)
+		return
+	}
 
 	jsonResponse := map[string]interface{}{
 		"results": results,
@@ -42,7 +48,7 @@ func FilmSearch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("error writing response for film search: ", s)
+		fmt.Println("Error writing response for (film) search: ", s)
 		return
 	}
 }
@@ -60,11 +66,15 @@ func FetchFilmServers(w http.ResponseWriter, r *http.Request) {
 	servers, err := film.GetFilmServer(filmID)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error fetching (film) servers", http.StatusInternalServerError)
 		return
 	}
 
-	responseBytes, err := json.Marshal(servers)
+	jsonResponse := map[string]interface{}{
+		"servers": servers,
+	}
+
+	responseBytes, err := json.Marshal(jsonResponse)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -74,7 +84,7 @@ func FetchFilmServers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("error writing response for film servers: ", s)
+		fmt.Println("Error writing response for (film) servers: ", s)
 		return
 	}
 }
@@ -92,18 +102,18 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 	sources, err := film.GetFilmSources(serverId)
 
 	if err != nil {
-		http.Error(w, "Error fetching film sources", http.StatusInternalServerError)
+		http.Error(w, "Error fetching (film) sources", http.StatusInternalServerError)
 		return 
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(sources)
 	if err != nil {
-		fmt.Println("error writing response for film sources: ", err)
+		fmt.Println("Error writing response for (film) sources: ", err)
 	}
 }
 
-// Anime
+// ######## Anime ########
 
 //	@Summary		Search for anime
 //	@Description	Search for anime by query
@@ -115,7 +125,12 @@ func FetchFilmSources(w http.ResponseWriter, r *http.Request) {
 //	@Router			/anime/all/search [get]
 func AnimeSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-	results, _ := anime.ProcessQuery(query)
+	results, err := anime.ProcessQuery(query)
+
+	if err != nil {
+		http.Error(w, "Error handling (anime) query", http.StatusInternalServerError)
+		return 
+	}
 
 	jsonResponse := map[string]interface{}{
 		"results": results,
@@ -131,7 +146,7 @@ func AnimeSearch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("Error writing response for film search: ", s)
+		fmt.Println("Error writing response for (anime) search: ", s)
 		return
 	}
 }
@@ -151,7 +166,12 @@ func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
 	translationType := r.URL.Query().Get("tt")
 	episodeString := r.URL.Query().Get("e")
 
-	anime := anime.ProcessSources(animeId, translationType, episodeString)
+	anime, err := anime.ProcessSources(animeId, translationType, episodeString)
+
+	if err != nil {
+		http.Error(w, "Error fetching (anime) sources", http.StatusInternalServerError)
+		return 
+	}
 
 	responseBytes, err := json.Marshal(anime)
 	if err != nil {
@@ -163,12 +183,12 @@ func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("Error writing response for film search: ", s)
+		fmt.Println("Error writing response for (anime) sources: ", s)
 		return
 	}
 }
 
-// Shows
+// ######## Shows ########
 
 //	@Summary		Search for shows
 //	@Description	Search for shows by query
@@ -180,8 +200,12 @@ func FetchAnimeSources(w http.ResponseWriter, r *http.Request) {
 //	@Router			/series/vip/search [get]
 func ShowSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-	
-	results, _ := show.ProcessQuery(query)
+	results, err := show.ProcessQuery(query)
+
+	if err != nil {
+		http.Error(w, "Error handling (show) query", http.StatusInternalServerError)
+		return 
+	}
 
 	jsonResponse := map[string]interface{}{
 		"results": results,
@@ -197,7 +221,7 @@ func ShowSearch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("Error writing response for film search: ", s)
+		fmt.Println("Error writing response for (show) search: ", s)
 		return
 	}
 }
@@ -212,7 +236,12 @@ func ShowSearch(w http.ResponseWriter, r *http.Request) {
 //	@Router			/series/vip/seasons [get]
 func ShowSeason(w http.ResponseWriter, r *http.Request) {
 	showId := r.URL.Query().Get("id")
-	results, _ := show.GetShowSeasons(showId)
+	results, err := show.GetShowSeasons(showId)
+
+	if err != nil {
+		http.Error(w, "Error fetching (show) seasons & episodes", http.StatusInternalServerError)
+		return 
+	}
 
 	responseBytes, err := json.Marshal(results)
 	if err != nil {
@@ -224,7 +253,7 @@ func ShowSeason(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("Error writing repsonse for show servers: ", s)
+		fmt.Println("Error writing repsonse for (show) seasons & episodes: ", s)
 		return
 	}
 }
@@ -242,11 +271,20 @@ func FetchShowServers(w http.ResponseWriter, r *http.Request) {
 	servers, err := show.GetShowServer(episodeId)
 
 	if err != nil {
+		http.Error(w, "Error fetching (show) servers", http.StatusInternalServerError)
+		return 
+	}
+
+	jsonResponse := map[string]interface{}{
+		"servers": servers,
+	}
+
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	responseBytes, err := json.Marshal(servers)
+	responseBytes, err := json.Marshal(jsonResponse)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -256,7 +294,7 @@ func FetchShowServers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, s := w.Write(responseBytes)
 	if s != nil {
-		fmt.Println("error writing response for show servers: ", s)
+		fmt.Println("Error writing response for (show) servers: ", s)
 		return
 	}
 }
@@ -274,18 +312,56 @@ func FetchShowSources(w http.ResponseWriter, r *http.Request) {
 	sources, err := show.GetShowSources(serverId)
 
 	if err != nil {
-		http.Error(w, "Error fetching show sources", http.StatusInternalServerError)
+		http.Error(w, "Error fetching (show) sources", http.StatusInternalServerError)
 		return 
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(sources)
 	if err != nil {
-		fmt.Println("error writing response for show sources: ", err)
+		fmt.Println("Error writing response for (show) sources: ", err)
 	}
 }
 
-// Users
+// ######## Novels ########
+
+//	@Summary		Search for novels
+//	@Description	Search for novels by query
+//	@Tags			Novels
+//	@Accept			json
+//	@Produce		json
+//	@Param			q	query		string	true	"Search Query"
+//	@Success		200	{object}	novel.NovelSearch
+//	@Router			/novels/rln/search [get]
+func NovelSearch(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	results, err := novel.ProcessQuery(query)
+
+	if err != nil {
+		http.Error(w, "Error handling (novel) query", http.StatusInternalServerError)
+		return
+	}
+
+	jsonResponse := map[string]interface{}{
+		"results": results,
+	}
+
+	responseBytes, err := json.Marshal(jsonResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, s := w.Write(responseBytes)
+	if s != nil {
+		fmt.Println("Error writing response for (novel) search: ", s)
+		return
+	}
+}
+
+// ######## Users ########
 
 //	@Summary		Get all users
 //	@Description	Retrieve a list of all users
@@ -431,7 +507,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
     http.NotFound(w, r)
 }
 
-// Home
+// ######## Home ########
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)

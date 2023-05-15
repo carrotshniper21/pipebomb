@@ -93,9 +93,9 @@ func AssignUrlValues(c *colly.Collector, searchGql string, variablesJSON []byte)
 func ProcessQuery(query string) (interface{}, error) {
 	var results []*AnimeSearch
 
-	anime, _ := animeSearcher(query)
+	anime, err := animeSearcher(query)
 
-  if anime != nil {
+  if err != nil {
     results = append(results, anime)
   }
 

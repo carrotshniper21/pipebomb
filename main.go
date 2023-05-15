@@ -15,9 +15,9 @@ import (
 //	@contact.email	support@swagger.io
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-//	@host			anij.bytecats.codes
-//	@BaseURL		anij.bytecats.codes 
-//	@BasePath		/pipebomb/api
+//	@host			127.0.0.1:8001
+//	@BaseURL		127.0.0.1:8001
+//	@BasePath		/api
 //	@schemes		https http
 func main() {
 	port := "8001"

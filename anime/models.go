@@ -51,9 +51,17 @@ type AnimeSearch struct {
 				EnglishName interface{} `json:"englishName"`
 				NativeName  interface{} `json:"nativeName"`
 				Thumbnail   string      `json:"thumbnail"`
+				AlternateThumbnails []string `json:"alternateThumbnails"`
 				Type        interface{} `json:"type"`
+				Description string `json:"description"`
 				AiredStart  struct {
 				} `json:"airedStart"`
+				Status string `json:"status"`
+				Genres []string `json:"genres"`
+				Tags []string `json:"tags"`
+				Country string `json:"country"`
+				Rating  string `json:"rating"`
+				Studios []string `json:"studios"`
 				EpisodeDuration   interface{} `json:"episodeDuration"`
 				EpisodeCount      interface{} `json:"episodeCount"`
 				LastUpdateEnd     string `json:"lastUpdateEnd"`
