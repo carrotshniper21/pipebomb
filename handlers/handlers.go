@@ -275,8 +275,7 @@ func NovelSearch(w http.ResponseWriter, r *http.Request) {
 // @Router			/api/profiles/users [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	color.Green("GET request received for all users")
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(profiles.Users)
+	util.WriteJSONResponse(w, profiles.Users)
 }
 
 // CreateUser
@@ -291,16 +290,12 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 // @Router			/api/profiles/users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	color.Cyan("POST request received to create a new user")
-	w.Header().Set("Content-Type", "application/json")
 	var user profiles.User
 	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	util.HandleError(w, err, err.Error(), http.StatusBadRequest)
 	profiles.Users = append(profiles.Users, user)
 	profiles.SaveUsers()
-	json.NewEncoder(w).Encode(user)
+	util.WriteJSONResponse(w, user)
 }
 
 // GetUser
@@ -315,12 +310,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Router			/api/profiles/users/{username} [get]
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	color.Yellow("GET request received for a specific user")
-	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	username := params["username"]
 	for _, user := range profiles.Users {
 		if user.Username == username {
-			json.NewEncoder(w).Encode(user)
+			util.WriteJSONResponse(w, user)
 			return
 		}
 	}
@@ -341,17 +335,13 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // @Router			/api/profiles/users/{username} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	color.Magenta("PUT request received to update a user")
-	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	username := params["username"]
 	for i, user := range profiles.Users {
 		if user.Username == username {
 			var updatedUser profiles.User
 			err := json.NewDecoder(r.Body).Decode(&updatedUser)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
+			util.HandleError(w, err, err.Error(), http.StatusBadRequest)
 
 			// Merge the updated fields with the existing user data
 			if updatedUser.Username != "" {
@@ -377,7 +367,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 			profiles.Users[i] = user
 			profiles.SaveUsers()
-			json.NewEncoder(w).Encode(user)
+			util.WriteJSONResponse(w, user)
 			return
 		}
 	}
@@ -396,7 +386,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Router			/api/profiles/users/{username} [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	color.Red("DELETE request received to delete a user")
-	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	username := params["username"]
 
@@ -405,7 +394,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 			if user.Username == username {
 				profiles.Users = append(profiles.Users[:i], profiles.Users[i+1:]...)
 				profiles.SaveUsers()
-				json.NewEncoder(w).Encode(user)
+				util.WriteJSONResponse(w, user)
 				return
 			}
 		}
