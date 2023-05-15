@@ -25,30 +25,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
-            "get": {
-                "description": "Displays a welcome message",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Home"
-                ],
-                "summary": "Home page",
-                "operationId": "home",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/anime/all/search": {
             "get": {
                 "description": "Search for anime by query",

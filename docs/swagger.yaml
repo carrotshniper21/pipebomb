@@ -389,22 +389,6 @@ info:
   title: Pipebomb API
   version: "6.9"
 paths:
-  /:
-    get:
-      description: Displays a welcome message
-      operationId: home
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Home page
-      tags:
-      - Home
   /anime/all/search:
     get:
       consumes:

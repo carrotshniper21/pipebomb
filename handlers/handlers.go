@@ -405,14 +405,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 // ######## Home ########
 
-// Home
-// @Summary		Home page
-// @Description	Displays a welcome message
-// @ID				home
-// @Tags			Home
-// @Produce		json
-// @Success		200		{object}	map[string]string
-// @Router			/ [get]
+// Home where the user goes when they need to poo-poo pee-pee
 func Home(w http.ResponseWriter, r *http.Request) {
 	color.Blue("GET request received for home page")
 	response := map[string]string{"message": "Welcome to the Profiles API!"}
