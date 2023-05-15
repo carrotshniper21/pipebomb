@@ -15,12 +15,17 @@ func HandleError(w http.ResponseWriter, err error, message string, status int) {
 
 func WriteJSONResponse(w http.ResponseWriter, data interface{}) {
 	responseBytes, err := json.Marshal(data)
-	HandleError(w, err, err.Error(), http.StatusInternalServerError)
+	if err != nil {
+		HandleError(w, err, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, s := w.Write(responseBytes)
-	HandleError(w, s, "Error writing response: ", s)
+	_, err = w.Write(responseBytes)
+	if err != nil {
+		HandleError(w, err, "Error writing response: ", http.StatusInternalServerError)
+	}
 }
 
 func LoggingError(context string, err error) {
