@@ -3,17 +3,18 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/fatih/color"
-	"github.com/gorilla/mux"
 	"net/http"
+
 	"pipebomb/anime"
 	"pipebomb/cache"
 	"pipebomb/novel"
 	"pipebomb/profiles"
 	"pipebomb/show"
 	"pipebomb/util"
-
 	"pipebomb/film"
+
+  "github.com/fatih/color"
+	"github.com/gorilla/mux"
 )
 
 // ######## Films ########

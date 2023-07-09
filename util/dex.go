@@ -12,7 +12,7 @@ import (
 )
 
 func Dechiper(encoded_url string) []byte {
-	resp, err := http.Get("https://raw.githubusercontent.com/enimax-anime/key/e4/key.txt")
+	resp, err := http.Get("https://raw.githubusercontent.com/carrotshniper21/key/e4/key.txt")
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
