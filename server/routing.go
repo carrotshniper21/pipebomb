@@ -16,7 +16,7 @@ func InitRouter(redisCache *cache.RedisCache) *mux.Router {
 	r.Use(logging.LoggingMiddleware)
 	r.HandleFunc("/", handlers.Home)
 	r.PathPrefix("/docs").Handler(httpSwagger.WrapHandler)
-	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch(redisCache)).Methods("GET") // pass the cache to your handlers
+	r.HandleFunc("/api/films/vip/search", handlers.FilmSearch(redisCache)).Methods("GET") 
 	r.HandleFunc("/api/films/vip/servers", handlers.FetchFilmServers(redisCache)).Methods("GET")
 	r.HandleFunc("/api/films/vip/sources", handlers.FetchFilmSources(redisCache)).Methods("GET")
 	r.HandleFunc("/api/series/vip/search", handlers.ShowSearch(redisCache)).Methods("GET")
@@ -26,11 +26,6 @@ func InitRouter(redisCache *cache.RedisCache) *mux.Router {
 	r.HandleFunc("/api/anime/all/search", handlers.AnimeSearch(redisCache)).Methods("GET")
 	r.HandleFunc("/api/anime/all/sources", handlers.FetchAnimeSources(redisCache)).Methods("GET")
 	r.HandleFunc("/api/novels/rln/search", handlers.NovelSearch(redisCache)).Methods("GET")
-	r.HandleFunc("/api/profiles/users", handlers.GetUsers).Methods("GET")
-	r.HandleFunc("/api/profiles/users", handlers.CreateUser).Methods("POST")
-	r.HandleFunc("/api/profiles/users/{username}", handlers.GetUser).Methods("GET")
-	r.HandleFunc("/api/profiles/users/{username}", handlers.UpdateUser).Methods("PUT")
-	r.HandleFunc("/api/profiles/users/{username}", handlers.DeleteUser).Methods("DELETE")
 
 	return r
 }
